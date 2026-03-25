@@ -1,157 +1,97 @@
-# VitaLens — Health Intelligence Platform
+# 🧬 VitaLens — AI-Powered Preventive Healthcare Infrastructure
 
-AI-powered lifestyle disease risk prediction with personalized hospital recommendations and blockchain-secured health records.
+![VitaLens](https://images.unsplash.com/photo-1576091160550-217359f47f48?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3)
 
----
+> **Empowering Proactive Health Decisions through Hybrid Deep Learning and Blockchain Security.**
 
-## Project Structure
-
-```
-vitalens/
-├── frontend/          # React app (HTML/CSS/JS)
-│   └── index.html     # Single-page application
-├── backend/           # FastAPI Python backend
-│   ├── main.py        # App entry point
-│   ├── routes/        # API route handlers
-│   │   ├── predict.py
-│   │   ├── records.py
-│   │   ├── hospitals.py
-│   │   └── auth.py
-│   ├── ml/            # Machine learning models
-│   │   ├── predictor.py
-│   │   ├── xai.py
-│   │   └── image_processor.py
-│   ├── blockchain/    # Ethereum integration
-│   │   └── service.py
-│   ├── services/      # Business logic
-│   │   └── hospital_finder.py
-│   ├── models/        # DB models
-│   │   └── schemas.py
-│   ├── database.py
-│   ├── requirements.txt
-│   └── .env.example
-├── contracts/         # Solidity smart contracts
-│   └── PatientRecord.sol
-└── README.md
-```
+VitaLens is a next-generation healthcare platform that bridges the gap between lifestyle data and early disease detection. By combining **CNN-BiLSTM architectures** for multi-modal analysis with **Ethereum-based smart contracts** for immutable health records, VitaLens provides a secure, accurate, and scalable solution for preventive medicine.
 
 ---
 
-## How to Run
+## 🌟 Key Features
+
+- **🧠 Multi-Modal Neural Engine**: Hybrid CNN-BiLSTM model that processes both static lifestyle metrics and sequential health trends for superior prediction accuracy.
+- **👁️ Medical Vision**: Integrated ResNet-50 feature extraction to analyze medical images (X-rays, ECGs) alongside lifestyle data.
+- **⛓️ Blockchain Integrity**: Every prediction is hashed and signed on the **Ethereum Sepolia Testnet**, ensuring patients own their data and it cannot be tampered with.
+- **📊 XAI (Explainable AI)**: Uses **SHAP values** to visualize *why* the AI made a certain prediction, providing transparency to doctors and patients.
+- **📍 Smart Triage**: Dynamic hospital recommendation engine that maps predicted risks to specialized nearby medical facilities based on real-time geographical data.
+
+---
+
+## 🏗️ Technical Architecture
+
+```mermaid
+graph TD
+    A[User Input / Medical Reports] --> B[Data Preprocessing]
+    B --> C{Hybrid ML Engine}
+    C --> D[CNN Branch: Structural Features]
+    C --> E[BiLSTM Branch: Sequential Trends]
+    D & E --> F[Feature Fusion Layer]
+    F --> G[Health Risk Probability]
+    G --> H[Explainable AI - SHAP]
+    G --> I[Blockchain Ledger - Ethereum]
+    G --> J[Hospital Recommendation Engine]
+```
+
+### 🛠️ Tech Stack
+- **Backend:** FastAPI (Python 3.10+), SQLAlchemy (PostgreSQL/SQLite)
+- **Machine Learning:** PyTorch, Torchvision (ResNet-50), NumPy, Pandas
+- **Blockchain:** Solidity (Smart Contracts), Web3.py, Ethereum (EVM)
+- **Frontend:** Vanilla JS / React, TailwindCSS, Chart.js for visualization
+- **DevOps:** Uvicorn, Python-dotenv, GIT
+
+---
+
+## 🌍 Real-World Impact
+
+In the current healthcare landscape, **preventive action** is significantly more cost-effective and successful than **reactive treatment**. VitaLens addresses three critical real-world challenges:
+
+1.  **Early Detection of Silent Killers**: Conditions like Type 2 Diabetes and Hypertension often go unnoticed. VitaLens uses subtle lifestyle patterns to flag high-risk individuals before symptoms become severe.
+2.  **Data Security & Trust**: Traditional medical databases are centralized and vulnerable to breaches. By using blockchain technology, we ensure medical history is immutable and patient-controlled.
+3.  **Explainability in Healthcare**: Black-box AI is dangerous in medicine. Our implementation of Explainable AI (XAI) ensures that clinicians can verify the logic behind every risk score.
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - Python 3.10+
-- Node.js 18+ (optional, for React build)
-- PostgreSQL (or use SQLite for local dev)
-- MetaMask wallet (for blockchain features)
+- Node.js (for Smart Contract deployment)
+- Ethereum Wallet (MetaMask) for blockchain features
+
+### Installation & Setup
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/santhoshkumar7507/Disease-Prediction-Using-ML.git
+   cd Disease-Prediction-Using-ML/vitalens
+   ```
+
+2. **Backend Configuration**
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   ```
+
+3. **Environment Setup**
+   Create a `.env` file in the `backend/` directory:
+   ```env
+   DATABASE_URL=sqlite:///./vitalens.db
+   JWT_SECRET=your_secret_key
+   BLOCKCHAIN_RPC=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
+   CONTRACT_ADDRESS=0x...
+   ```
+
+4. **Launch the Servers**
+   - **Backend**: `uvicorn main:app --reload --port 8000`
+   - **Frontend**: `cd ../frontend && python -m http.server 5500`
 
 ---
 
-### Step 1 — Clone / Extract the project
-
-```bash
-cd vitalens
-```
+## 📜 License
+Published under the MIT License. Developed for the Final Year Project — Healthcare Innovation.
 
 ---
-
-### Step 2 — Backend Setup
-
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Activate (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
----
-
-### Step 3 — Configure Environment
-
-```bash
-cp .env.example .env
-# Edit .env with your values (see .env.example)
-```
-
----
-
-### Step 4 — Run Backend
-
-```bash
-# From backend/ folder
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-API will be live at: `http://localhost:8000`
-Swagger docs at:    `http://localhost:8000/api/docs`
-
----
-
-### Step 5 — Run Frontend
-
-Simply open `frontend/index.html` in your browser.
-
-Or serve it with Python:
-```bash
-cd frontend
-python -m http.server 5500
-# Open http://localhost:5500
-```
-
----
-
-### Step 6 — Deploy Smart Contract (Optional)
-
-```bash
-cd contracts
-npm install -g hardhat
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network sepolia
-# Copy contract address to .env → CONTRACT_ADDRESS
-```
-
----
-
-## Hospital Recommendation
-
-Hospitals are suggested dynamically based on the user's entered city/location.
-
-- User enters city (e.g., Mumbai, Delhi, Bangalore, Hyderabad...)
-- Backend matches city to hospital database
-- Falls back to nearest major city if exact city not found
-- Google Places API integration available for live results
-
-Supported cities (built-in): Coimbatore, Chennai, Mumbai, Delhi, Bangalore, Hyderabad, Kolkata, Pune, Ahmedabad, Jaipur, Lucknow, Kochi, Surat, Nagpur, Visakhapatnam, Madurai, Trichy, Salem, Mysore, Chandigarh
-
----
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/predict/analyze | Predict disease from lifestyle data |
-| POST | /api/predict/analyze-with-report | Predict + upload medical report |
-| GET  | /api/hospitals/nearby?city=X&disease=Y | Get hospitals by city + disease |
-| GET  | /api/records/{patient_id} | Get blockchain health records |
-| POST | /api/auth/register | Register new user |
-| POST | /api/auth/login | Login and get JWT token |
-
----
-
-## Tech Stack (Internal Reference)
-
-- Frontend: HTML5, CSS3, Vanilla JS (or React)
-- Backend: FastAPI, Python 3.10+
-- ML: PyTorch (CNN + BiLSTM), SHAP, scikit-learn
-- Blockchain: Solidity, Web3.py, Ethereum Sepolia
-- Database: PostgreSQL + SQLAlchemy
-- Image: ResNet-50 (torchvision)
+*Created with ❤️ by the VitaLens Team.*
