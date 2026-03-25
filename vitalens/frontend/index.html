@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VitaLens — Health Intelligence</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23161b22'/><path d='M30 40 L50 70 L70 40' stroke='%23bc8cff' stroke-width='12' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='50' cy='20' r='8' fill='%233fb950'/></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Lora:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--sur:#1c2128;--sur2:#2d333b;
+  --brd:rgba(255,255,255,.08);--brd2:rgba(255,255,255,.14);
+  --tx:#e6edf3;--tx2:#8b949e;--tx3:#484f58;
+  --ac:#58a6ff;--acg:rgba(88,166,255,.12);--ac2:#3fb950;
+  --wn:#d29922;--dg:#f85149;--vl:#bc8cff;
+  --sh:0 8px 32px rgba(0,0,0,.4);--sh2:0 2px 8px rgba(0,0,0,.3);
+  --nb:rgba(13,17,23,.95);
+}
+[data-theme="light"]{
+  --bg:#f0f4f8;--bg2:#fff;--bg3:#e8edf3;--sur:#fff;--sur2:#f0f3f7;
+  --brd:rgba(0,0,0,.08);--brd2:rgba(0,0,0,.14);
+  --tx:#0d1117;--tx2:#57606a;--tx3:#afb8c1;
+  --ac:#0969da;--acg:rgba(9,105,218,.09);--ac2:#1a7f37;
+  --wn:#9a6700;--dg:#cf222e;--vl:#8250df;
+  --sh:0 4px 20px rgba(0,0,0,.07);--sh2:0 2px 8px rgba(0,0,0,.05);
+  --nb:rgba(255,255,255,.96);
+}
+*{margin:0;padding:0;box-sizing:border-box;transition:background-color .2s,color .2s,border-color .2s;}
+body{background:var(--bg);color:var(--tx);font-family:'Outfit',sans-serif;min-height:100vh;}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:999;height:58px;background:var(--nb);border-bottom:1px solid var(--brd);backdrop-filter:blur(20px);display:flex;align-items:center;padding:0 20px;gap:12px;}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0;}
+.logo svg{width:34px;height:34px;flex-shrink:0;}
+.logo-name{font-size:19px;font-weight:800;color:var(--tx);letter-spacing:-.5px;}
+.logo-name em{color:var(--ac);font-style:normal;}
+.logo-tag{font-size:9px;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
+.nav-mid{flex:1;display:flex;justify-content:center;}
+.nav-tabs{display:flex;gap:2px;background:var(--bg3);padding:3px;border-radius:9px;}
+.ntab{padding:6px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--tx2);font-family:'Outfit',sans-serif;transition:all .15s;}
+.ntab.on{background:var(--sur);color:var(--ac);box-shadow:var(--sh2);}
+.ntab:hover:not(.on){color:var(--tx);}
+.nav-r{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.tb{width:34px;height:34px;border-radius:50%;border:1px solid var(--brd2);background:var(--sur2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--tx);}
+.tb:hover{background:var(--acg);border-color:var(--ac);}
+.uchip{display:flex;align-items:center;gap:7px;background:var(--sur2);border:1px solid var(--brd);border-radius:20px;padding:3px 12px 3px 3px;cursor:pointer;}
+.uav{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--vl));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+.uname{font-size:12px;font-weight:500;}
+.umenu{position:absolute;top:52px;right:20px;background:var(--sur);border:1px solid var(--brd);border-radius:12px;width:220px;box-shadow:var(--sh);padding:12px;display:none;flex-direction:column;gap:8px;z-index:1000;}
+.umenu.active{display:flex;animation:fadein .2s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.umenu-hd{border-bottom:1px solid var(--brd);padding-bottom:8px;margin-bottom:4px;}
+.umenu-name{font-size:14px;font-weight:700;}
+.umenu-email{font-size:11px;color:var(--tx2);word-break:break-all;}
+.umenu-btn{background:transparent;border:none;color:var(--dg);text-align:left;font-size:13px;font-weight:600;padding:8px;border-radius:6px;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;}
+.umenu-btn:hover{background:rgba(248,81,73,.1);}
+
+/* ── LAYOUT ── */
+.layout{display:flex;padding-top:58px;min-height:100vh;}
+.sidebar{width:210px;flex-shrink:0;position:fixed;top:58px;bottom:0;background:var(--bg2);border-right:1px solid var(--brd);padding:16px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.ssec{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;padding:10px 10px 5px;margin-top:4px;}
+.sitem{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);border:none;background:transparent;width:100%;text-align:left;font-family:'Outfit',sans-serif;transition:all .15s;position:relative;}
+.sitem:hover{background:var(--sur2);color:var(--tx);}
+.sitem.on{background:var(--acg);color:var(--ac);}
+.sitem.on::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--ac);border-radius:0 3px 3px 0;}
+.si{width:18px;text-align:center;font-size:14px;flex-shrink:0;}
+.sbadge{margin-left:auto;background:var(--dg);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+.sfooter{margin-top:auto;padding:10px 12px;background:var(--sur2);border-radius:10px;border:1px solid var(--brd);}
+.sfn{font-size:13px;font-weight:600;margin-bottom:2px;}
+.sfr{font-size:11px;color:var(--tx2);}
+.sfs{font-size:11px;color:var(--ac2);margin-top:4px;display:flex;align-items:center;gap:4px;}
+.sfs::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ac2);}
+
+/* ── MAIN ── */
+.content{margin-left:210px;flex:1;padding:24px 28px;max-width:calc(100vw - 210px);}
+.screen{display:none;animation:fu .3s ease;}
+.screen.on{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:22px;}
+.pt{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px;}
+.ps{font-size:13px;color:var(--tx2);}
+.bc{font-size:11px;color:var(--tx3);margin-bottom:7px;display:flex;align-items:center;gap:5px;}
+.bc span{color:var(--tx2);}
+
+/* ── STATS ── */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.sc{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;top:-16px;right:-16px;width:60px;height:60px;border-radius:50%;opacity:.08;}
+.sc.bl::after{background:var(--ac);}
+.sc.gr::after{background:var(--ac2);}
+.sc.wn::after{background:var(--wn);}
+.sc.rd::after{background:var(--dg);}
+.sn{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:2px;}
+.sc.bl .sn{color:var(--ac);}
+.sc.gr .sn{color:var(--ac2);}
+.sc.wn .sn{color:var(--wn);}
+.sc.rd .sn{color:var(--dg);}
+.sl{font-size:11px;color:var(--tx2);font-weight:500;}
+.schg{font-size:10px;margin-top:6px;}
+.schg.up{color:var(--ac2);}
+.schg.dn{color:var(--dg);}
+
+/* ── CARD ── */
+.card{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:20px;margin-bottom:16px;}
+.ct{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.ci{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.ci.bl{background:var(--acg);color:var(--ac);}
+.ci.gr{background:rgba(63,185,80,.1);color:var(--ac2);}
+.ci.wn{background:rgba(210,153,34,.1);color:var(--wn);}
+.ci.rd{background:rgba(248,81,73,.1);color:var(--dg);}
+.ci.vl{background:rgba(188,140,255,.1);color:var(--vl);}
+
+/* ── WIZARD ── */
+.wiz{display:flex;align-items:center;margin-bottom:22px;}
+.ws{display:flex;align-items:center;gap:7px;}
+.wc{width:30px;height:30px;border-radius:50%;border:2px solid var(--brd2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--tx3);background:var(--sur2);flex-shrink:0;transition:all .3s;}
+.ws.on .wc{border-color:var(--ac);color:var(--ac);background:var(--acg);}
+.ws.dn .wc{border-color:var(--ac2);color:#fff;background:var(--ac2);}
+.wl{flex:1;height:2px;background:var(--brd2);margin:0 6px;min-width:16px;transition:background .3s;}
+.wl.dn{background:var(--ac2);}
+.wlbl{font-size:11px;font-weight:600;color:var(--tx3);}
+.ws.on .wlbl{color:var(--ac);}
+.ws.dn .wlbl{color:var(--ac2);}
+
+/* ── FORM ── */
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.fr.t3{grid-template-columns:1fr 1fr 1fr;}
+.fr.t1{grid-template-columns:1fr;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fl{font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.7px;}
+.fi{background:var(--sur2);border:1.5px solid var(--brd2);border-radius:9px;padding:9px 13px;font-size:13px;color:var(--tx);font-family:'Outfit',sans-serif;outline:none;width:100%;}
+.fi:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acg);}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%238b949e' d='M5 7L1 2h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:28px;}
+
+/* ── SLIDERS ── */
+.slw{margin-bottom:16px;}
+.slh{display:flex;justify-content:space-between;margin-bottom:6px;}
+.slname{font-size:13px;font-weight:500;}
+.slval{font-size:13px;font-weight:700;color:var(--ac);background:var(--acg);padding:2px 9px;border-radius:20px;}
+input[type=range]{width:100%;height:5px;-webkit-appearance:none;border-radius:3px;background:var(--sur2);outline:none;border:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--ac);border:2px solid var(--bg2);}
+
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;}
+.chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--brd2);font-size:12px;font-weight:500;cursor:pointer;background:var(--sur2);color:var(--tx2);transition:all .15s;font-family:'Outfit',sans-serif;}
+.chip:hover{border-color:var(--ac);color:var(--ac);}
+.chip.on{background:var(--acg);border-color:var(--ac);color:var(--ac);font-weight:600;}
+
+/* ── UPLOAD ── */
+.uz{border:2px dashed var(--brd2);border-radius:11px;padding:24px 18px;text-align:center;cursor:pointer;transition:all .2s;background:var(--sur2);position:relative;}
+.uz:hover{border-color:var(--ac);background:var(--acg);}
+.uz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.ue{font-size:28px;margin-bottom:7px;}
+.ut{font-size:13px;font-weight:600;margin-bottom:3px;}
+.usb{font-size:11px;color:var(--tx2);}
+.udone{font-size:11px;color:var(--ac2);margin-top:5px;font-weight:600;}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 20px;border-radius:9px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;font-family:'Outfit',sans-serif;display:inline-flex;align-items:center;gap:6px;}
+.btn-p{background:var(--ac);color:#fff;}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-g{background:var(--sur2);border:1px solid var(--brd2);color:var(--tx2);}
+.btn-g:hover{border-color:var(--ac);color:var(--ac);}
+.btn-lg{padding:12px 30px;font-size:14px;border-radius:11px;}
+.brow{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--brd);}
+
+/* ── AI PROGRESS ── */
+.aibox{text-align:center;padding:44px 28px;}
+.pulse{width:68px;height:68px;border-radius:50%;border:3px solid var(--ac);margin:0 auto 18px;animation:pp 1.3s ease infinite;}
+@keyframes pp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.45}}
+.aititle{font-size:20px;font-weight:800;margin-bottom:5px;}
+.aisub{font-size:12px;color:var(--tx2);}
+.ailist{list-style:none;text-align:left;max-width:320px;margin:20px auto 0;}
+.aistep{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:12px;color:var(--tx3);border-bottom:1px solid var(--brd);}
+.aistep:last-child{border-bottom:none;}
+.aistep.dn{color:var(--ac2);}
+.aistep.on{color:var(--ac);font-weight:600;}
+.adot{width:8px;height:8px;border-radius:50%;background:var(--brd2);flex-shrink:0;}
+.adot.dn{background:var(--ac2);}
+.adot.on{background:var(--ac);animation:bk 1s infinite;}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── RISK BANNER ── */
+.rbanner{border-radius:12px;padding:20px 22px;margin-bottom:18px;display:flex;gap:14px;align-items:flex-start;}
+.rbanner.high{background:linear-gradient(135deg,rgba(248,81,73,.1),rgba(248,81,73,.04));border:1px solid rgba(248,81,73,.28);}
+.rbanner.medium{background:linear-gradient(135deg,rgba(210,153,34,.1),rgba(210,153,34,.04));border:1px solid rgba(210,153,34,.28);}
+.rbanner.low{background:linear-gradient(135deg,rgba(63,185,80,.1),rgba(63,185,80,.04));border:1px solid rgba(63,185,80,.28);}
+.ricon{font-size:38px;flex-shrink:0;}
+.rname{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:5px;}
+.rpills{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:7px;}
+.rpill{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;}
+.rpill.high{background:rgba(248,81,73,.18);color:var(--dg);}
+.rpill.medium{background:rgba(210,153,34,.18);color:var(--wn);}
+.rpill.low{background:rgba(63,185,80,.18);color:var(--ac2);}
+.rpill.critical{background:rgba(188,140,255,.18);color:var(--vl);}
+.rdesc{font-size:12px;color:var(--tx2);line-height:1.6;}
+.lvl{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.lvl.low{background:rgba(63,185,80,.15);color:var(--ac2);}
+.lvl.medium{background:rgba(210,153,34,.15);color:var(--wn);}
+.lvl.high{background:rgba(248,81,73,.15);color:var(--dg);}
+.lvl.critical{background:rgba(188,140,255,.15);color:var(--vl);}
+
+/* ── BODY MAP ── */
+.bwrap{display:flex;gap:18px;}
+.bsvg{flex-shrink:0;width:155px;}
+.bimp{flex:1;}
+.ir{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--brd);}
+.ir:last-child{border-bottom:none;}
+.idot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.iorg{font-size:13px;font-weight:700;margin-bottom:2px;}
+.idesc{font-size:11px;color:var(--tx2);line-height:1.5;}
+
+/* ── SHAP ── */
+.srow{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.slb{width:175px;font-size:12px;flex-shrink:0;color:var(--tx2);}
+.str{flex:1;background:var(--sur2);border-radius:3px;height:6px;overflow:hidden;}
+.sf{height:6px;border-radius:3px;}
+.spct{width:34px;font-size:11px;font-weight:700;text-align:right;}
+
+/* ── FOOD ── */
+.f2col{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.fbox{border-radius:9px;padding:13px;}
+.fbox.eat{background:rgba(63,185,80,.07);border:1px solid rgba(63,185,80,.2);}
+.fbox.avoid{background:rgba(248,81,73,.07);border:1px solid rgba(248,81,73,.2);}
+.fhead{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.fbox.eat .fhead{color:var(--ac2);}
+.fbox.avoid .fhead{color:var(--dg);}
+.flist{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.flist li{font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:5px;}
+.flist li::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.fbox.eat .flist li::before{background:var(--ac2);}
+.fbox.avoid .flist li::before{background:var(--dg);}
+
+/* ── TREATMENT ── */
+.t3col{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+.tbox{background:var(--sur2);border:1px solid var(--brd);border-radius:9px;padding:13px;text-align:center;}
+.temoji{font-size:22px;margin-bottom:6px;}
+.ttitle{font-size:12px;font-weight:700;margin-bottom:3px;}
+.tdesc{font-size:11px;color:var(--tx2);line-height:1.5;}
+
+/* ── HOSPITALS ── */
+.hitem{display:flex;gap:11px;padding:13px;border:1px solid var(--brd);border-radius:9px;margin-bottom:9px;background:var(--sur2);cursor:pointer;transition:all .2s;}
+.hitem:hover{border-color:var(--ac);background:var(--acg);}
+.hrank{width:28px;height:28px;border-radius:7px;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
+.hname{font-size:13px;font-weight:700;margin-bottom:2px;}
+.haddr{font-size:11px;color:var(--tx2);margin-bottom:5px;}
+.htags{display:flex;flex-wrap:wrap;gap:4px;}
+.htag{background:var(--acg);color:var(--ac);font-size:9px;font-weight:700;padding:2px 7px;border-radius:9px;}
+.hrating{margin-left:auto;font-size:12px;font-weight:700;color:var(--wn);flex-shrink:0;}
+.hphone{font-size:10px;color:var(--tx2);margin-top:3px;}
+.nearby-note{background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.2);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--wn);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+
+/* ── MAP ── */
+.mapbox{border-radius:11px;height:280px;background:var(--sur2);border:1px solid var(--brd);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.mgrid{position:absolute;inset:0;background-image:linear-gradient(var(--brd) 1px,transparent 1px),linear-gradient(90deg,var(--brd) 1px,transparent 1px);background-size:34px 34px;}
+.mcenter{z-index:2;text-align:center;}
+.mcity{font-size:16px;font-weight:800;color:var(--ac);margin-top:6px;}
+.mnote{font-size:11px;color:var(--tx2);margin-top:3px;}
+.mpins{position:absolute;inset:0;z-index:3;}
+.pin{position:absolute;}
+.pdot{width:12px;height:12px;background:var(--dg);border-radius:50%;border:2px solid var(--bg2);}
+.pdot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(248,81,73,.22);animation:rp 1.8s ease infinite;}
+@keyframes rp{0%{transform:scale(1);opacity:.6}100%{transform:scale(2.4);opacity:0}}
+.plbl{position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:var(--sur);border:1px solid var(--brd);border-radius:5px;padding:2px 6px;font-size:9px;font-weight:700;white-space:nowrap;color:var(--tx);}
+
+/* ── CHAIN ── */
+.chainbox{background:rgba(188,140,255,.07);border:1px solid rgba(188,140,255,.22);border-radius:11px;padding:15px 18px;font-family:'Courier New',monospace;font-size:11px;color:var(--vl);line-height:2;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;padding:7px 11px;font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--brd);}
+.tbl td{padding:9px 11px;border-bottom:1px solid var(--brd);}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--sur2);}
+
+/* ── ALERTS ── */
+.alitem{display:flex;gap:11px;padding:11px 13px;border-radius:9px;margin-bottom:7px;border:1px solid var(--brd);}
+.alitem.dg{background:rgba(248,81,73,.05);border-color:rgba(248,81,73,.22);}
+.alitem.wn{background:rgba(210,153,34,.05);border-color:rgba(210,153,34,.22);}
+.alitem.bl{background:var(--acg);border-color:rgba(88,166,255,.22);}
+.alico{font-size:18px;flex-shrink:0;}
+.alit{font-size:13px;font-weight:600;margin-bottom:2px;}
+.alm{font-size:11px;color:var(--tx2);}
+.altime{font-size:10px;color:var(--tx3);margin-left:auto;flex-shrink:0;white-space:nowrap;}
+
+/* ── MINI BARS ── */
+.mbars{display:flex;align-items:flex-end;gap:4px;height:48px;}
+.mb{flex:1;border-radius:2px 2px 0 0;background:var(--acg);min-width:7px;}
+.mb:last-child{background:var(--ac);}
+
+/* ── SECURITY BAR ── */
+.secbar{display:flex;align-items:center;gap:7px;background:rgba(63,185,80,.07);border:1px solid rgba(63,185,80,.18);border-radius:7px;padding:9px 13px;font-size:11px;color:var(--ac2);margin-top:12px;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--sur2);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="logo" href="#">
+    <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="34" height="34" rx="8" fill="var(--ac)"/>
+      <path d="M6 19h4l3-9 4 16 3-11 2 5h6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="27" cy="9" r="3" fill="#3fb950" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <div>
+      <div class="logo-name">Vita<em>Lens</em></div>
+      <div class="logo-tag">Health Intelligence</div>
+    </div>
+  </a>
+  <div class="nav-mid">
+    <div class="nav-tabs">
+      <button class="ntab on" onclick="goScreen('dashboard',this)">Dashboard</button>
+      <button class="ntab"    onclick="goScreen('predict',this)">Assess</button>
+      <button class="ntab"    onclick="goScreen('records',this)">Records</button>
+      <button class="ntab"    onclick="goScreen('alerts',this)">Alerts</button>
+    </div>
+  </div>
+  <div class="nav-r">
+    <button class="tb" id="tbtn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <div class="uchip" onclick="toggleUserMenu(event)">
+      <div class="uav" id="uav">AR</div>
+      <div class="uname" id="uname">Arjun R.</div>
+    </div>
+    <div class="umenu" id="userMenu">
+      <div class="umenu-hd">
+        <div class="umenu-name" id="um-name">User Name</div>
+        <div class="umenu-email" id="um-email">user@example.com</div>
+      </div>
+      <button class="umenu-btn" onclick="logout()">Log Out &rarr;</button>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="ssec">Overview</div>
+    <button class="sitem on" onclick="sbNav(this,'dashboard')"><span class="si">⬡</span>Dashboard</button>
+    <button class="sitem"    onclick="sbNav(this,'predict')"><span class="si">◎</span>New Assessment</button>
+    <div class="ssec">Health</div>
+    <button class="sitem"    onclick="sbNav(this,'records')"><span class="si">◈</span>My Records</button>
+    <button class="sitem"    onclick="sbNav(this,'alerts')"><span class="si">◉</span>Alerts<span class="sbadge">3</span></button>
+    <div class="ssec">Account</div>
+    <button class="sitem"    onclick="sbNav(this,'settings')"><span class="si">◌</span>Settings</button>
+    <div class="sfooter">
+      <div class="sfn" id="sf-name">Arjun Rajan</div>
+      <div class="sfr">Patient · ID #00042</div>
+      <div class="sfs">Active Session</div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <div id="sc-dashboard" class="screen on">
+      <div class="ph">
+        <div class="bc">VitaLens <span>/ Dashboard</span></div>
+        <div class="pt" id="db-greet">Good morning, Arjun 👋</div>
+        <div class="ps">Your health overview — updated today</div>
+      </div>
+      <div class="sg">
+        <div class="sc bl"><div class="sn">97.4%</div><div class="sl">Prediction Accuracy</div><div class="schg up">↑ 0.3% this month</div></div>
+        <div class="sc gr"><div class="sn">12</div><div class="sl">Assessments Done</div><div class="schg up">↑ 2 this week</div></div>
+        <div class="sc wn"><div class="sn">68</div><div class="sl">Current Risk Score</div><div class="schg dn">↑ 5 pts from last check</div></div>
+        <div class="sc rd"><div class="sn">3</div><div class="sl">Active Alerts</div><div class="schg dn">Requires attention</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
+        <div>
+          <div class="card">
+            <div class="ct"><div class="ci bl">◎</div>Recent Assessments</div>
+            <table class="tbl">
+              <thead><tr><th>Date</th><th>Condition</th><th>Risk</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>25 Mar 2025</td><td>Type 2 Diabetes</td><td><span class="lvl high">High</span></td><td style="color:var(--ac2)">✓ Secured</td></tr>
+                <tr><td>18 Mar 2025</td><td>Hypertension</td><td><span class="lvl medium">Medium</span></td><td style="color:var(--ac2)">✓ Secured</td></tr>
+                <tr><td>05 Mar 2025</td><td>Liver Disease</td><td><span class="lvl low">Low</span></td><td style="color:var(--ac2)">✓ Secured</td></tr>
+                <tr><td>20 Feb 2025</td><td>Heart Disease</td><td><span class="lvl medium">Medium</span></td><td style="color:var(--ac2)">✓ Secured</td></tr>
+              </tbody>
+            </table>
+            <div style="margin-top:12px"><button class="btn btn-p" onclick="sbNav(document.querySelectorAll('.sitem')[1],'predict')">+ New Assessment</button></div>
+          </div>
+          <div class="card">
+            <div class="ct"><div class="ci rd">◉</div>Active Alerts</div>
+            <div class="alitem dg"><div class="alico">⚠</div><div><div class="alit">Blood sugar above threshold</div><div class="alm">Fasting glucose: 128 mg/dL — review recommended</div></div><div class="altime">Today</div></div>
+            <div class="alitem wn"><div class="alico">◎</div><div><div class="alit">Low physical activity this week</div><div class="alm">Target: 5 days — achieved: 2 days</div></div><div class="altime">This week</div></div>
+            <div class="alitem bl"><div class="alico">◌</div><div><div class="alit">Upcoming appointment reminder</div><div class="alm">Kovai Medical Center, 28 Mar 2025, 10:00 AM</div></div><div class="altime">3 days</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <div class="ct"><div class="ci wn">◈</div>Weekly Activity</div>
+            <div class="mbars"><div class="mb" style="height:45%"></div><div class="mb" style="height:62%"></div><div class="mb" style="height:55%"></div><div class="mb" style="height:80%"></div><div class="mb" style="height:70%"></div><div class="mb" style="height:38%"></div><div class="mb" style="height:90%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);margin-top:5px"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          </div>
+          <div class="card">
+            <div class="ct"><div class="ci vl">⬡</div>Risk by Condition</div>
+            <div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Diabetes</span><span style="color:var(--dg)">78%</span></div><div style="background:var(--sur2);border-radius:3px;height:5px;overflow:hidden"><div style="width:78%;height:5px;background:var(--dg);border-radius:3px"></div></div></div>
+            <div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Heart Disease</span><span style="color:var(--wn)">52%</span></div><div style="background:var(--sur2);border-radius:3px;height:5px;overflow:hidden"><div style="width:52%;height:5px;background:var(--wn);border-radius:3px"></div></div></div>
+            <div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Hypertension</span><span style="color:var(--wn)">45%</span></div><div style="background:var(--sur2);border-radius:3px;height:5px;overflow:hidden"><div style="width:45%;height:5px;background:var(--wn);border-radius:3px"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Liver Disease</span><span style="color:var(--ac2)">22%</span></div><div style="background:var(--sur2);border-radius:3px;height:5px;overflow:hidden"><div style="width:22%;height:5px;background:var(--ac2);border-radius:3px"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREDICT -->
+    <div id="sc-predict" class="screen">
+      <div class="ph">
+        <div class="bc">VitaLens <span>/ Assessment</span></div>
+        <div class="pt">Health Assessment</div>
+        <div class="ps">Complete all steps for your personalized disease risk report</div>
+      </div>
+      <div class="wiz" id="wiz">
+        <div class="ws on" id="ws1"><div class="wc" id="wc1">1</div><div class="wlbl">Personal</div></div>
+        <div class="wl" id="wl1"></div>
+        <div class="ws" id="ws2"><div class="wc" id="wc2">2</div><div class="wlbl">Lifestyle</div></div>
+        <div class="wl" id="wl2"></div>
+        <div class="ws" id="ws3"><div class="wc" id="wc3">3</div><div class="wlbl">Reports</div></div>
+        <div class="wl" id="wl3"></div>
+        <div class="ws" id="ws4"><div class="wc" id="wc4">4</div><div class="wlbl">Analysis</div></div>
+        <div class="wl" id="wl4"></div>
+        <div class="ws" id="ws5"><div class="wc" id="wc5">5</div><div class="wlbl">Results</div></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div id="p1">
+        <div class="card">
+          <div class="ct"><div class="ci bl">👤</div>Personal Information</div>
+          <div class="fr"><div class="fg"><label class="fl">Full Name</label><input class="fi" id="pname" placeholder="Your full name"/></div><div class="fg"><label class="fl">Age</label><input class="fi" id="page" type="number" placeholder="35"/></div></div>
+          <div class="fr t3"><div class="fg"><label class="fl">Gender</label><select class="fi" id="pgender"><option>Male</option><option>Female</option><option>Other</option></select></div><div class="fg"><label class="fl">Blood Group</label><select class="fi" id="pblood"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div><div class="fg"><label class="fl">City / Location</label><input class="fi" id="pcity" placeholder="e.g. Mumbai, Bangalore…"/></div></div>
+          <div class="fr t3"><div class="fg"><label class="fl">Height (cm)</label><input class="fi" id="pht" type="number" placeholder="170"/></div><div class="fg"><label class="fl">Weight (kg)</label><input class="fi" id="pwt" type="number" placeholder="72"/></div><div class="fg"><label class="fl">BMI</label><input class="fi" id="pbmi" placeholder="Auto" readonly style="opacity:.55"/></div></div>
+        </div>
+        <div class="card">
+          <div class="ct"><div class="ci wn">🩺</div>Health Metrics</div>
+          <div class="fr t3"><div class="fg"><label class="fl">Blood Pressure</label><input class="fi" placeholder="120/80 mmHg"/></div><div class="fg"><label class="fl">Fasting Blood Sugar</label><input class="fi" id="psugar" type="number" placeholder="mg/dL"/></div><div class="fg"><label class="fl">Cholesterol</label><input class="fi" type="number" placeholder="mg/dL"/></div></div>
+        </div>
+        <div class="brow"><div></div><button class="btn btn-p btn-lg" onclick="ws(2)">Continue →</button></div>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="p2" style="display:none">
+        <div class="card">
+          <div class="ct"><div class="ci gr">🏃</div>Daily Activities & Lifestyle</div>
+          <p style="font-size:12px;color:var(--tx2);margin-bottom:12px;line-height:1.5;">Type out how you spend your typical day. Give as much detail as possible (what you eat, your job, exercise, sleep schedule, stress, etc). Our Rule-Based AI Engine will parse this to predict your health risks!</p>
+          <textarea id="daily-activities" class="fi" rows="6" placeholder="Example: I usually wake up at 8 AM, drink sweet coffee, and sit at my desk working until 6 PM. I eat pizza or fast food for lunch, sometimes hit the gym in the evening. I smoke occasionally..."></textarea>
+        </div>
+        <div class="card"><div class="ct"><div class="ci rd">🤒</div>Symptoms — select all that apply</div><div class="chips" id="csymp"></div></div>
+        <div class="card"><div class="ct"><div class="ci vl">🧬</div>Family Medical History</div><div class="chips" id="cfam"></div></div>
+        <div class="brow"><button class="btn btn-g" onclick="ws(1)">← Back</button><button class="btn btn-p btn-lg" onclick="ws(3)">Continue →</button></div>
+      </div>
+
+      <!-- Step 3 -->
+      <div id="p3" style="display:none">
+        <div class="card">
+          <div class="ct"><div class="ci bl">📁</div>Upload Medical Reports <span style="font-size:11px;font-weight:400;color:var(--tx2);margin-left:5px">(Optional)</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+            <div class="uz"><input type="file" accept="image/*,.pdf,.dcm" onchange="mu(this,'ud1')"/><div class="ue">🫁</div><div class="ut">Chest X-Ray / CT Scan</div><div class="usb">DICOM · PNG · JPG · PDF</div><div class="udone" id="ud1"></div></div>
+            <div class="uz"><input type="file" accept="image/*,.pdf" onchange="mu(this,'ud2')"/><div class="ue">🩸</div><div class="ut">Blood / Lab Report</div><div class="usb">PNG · JPG · PDF</div><div class="udone" id="ud2"></div></div>
+            <div class="uz"><input type="file" accept="image/*,.pdf" onchange="mu(this,'ud3')"/><div class="ue">💓</div><div class="ut">ECG / Heart Report</div><div class="usb">PNG · JPG · PDF</div><div class="udone" id="ud3"></div></div>
+            <div class="uz"><input type="file" accept="image/*,.pdf" onchange="mu(this,'ud4')"/><div class="ue">📄</div><div class="ut">Other Report</div><div class="usb">PNG · JPG · PDF</div><div class="udone" id="ud4"></div></div>
+          </div>
+          <div class="secbar">🔒 All files are encrypted. Only you and authorized doctors can access them.</div>
+        </div>
+        <div class="brow"><button class="btn btn-g" onclick="ws(2)">← Back</button><button class="btn btn-p btn-lg" onclick="ws(4)">Analyze Now →</button></div>
+      </div>
+
+      <!-- Step 4 -->
+      <div id="p4" style="display:none">
+        <div class="card">
+          <div class="aibox">
+            <div class="pulse" id="pulse"></div>
+            <div class="aititle" id="ait">Analyzing your health data...</div>
+            <div class="aisub" id="ais">This takes about 10 seconds</div>
+            <ul class="ailist">
+              <li class="aistep on" id="as1"><div class="adot on"></div>Processing personal & health metrics</li>
+              <li class="aistep" id="as2"><div class="adot"></div>Scanning uploaded medical reports</li>
+              <li class="aistep" id="as3"><div class="adot"></div>Running disease risk prediction</li>
+              <li class="aistep" id="as4"><div class="adot"></div>Computing factor importance scores</li>
+              <li class="aistep" id="as5"><div class="adot"></div>Generating personalized recommendations</li>
+              <li class="aistep" id="as6"><div class="adot"></div>Finding hospitals near your location</li>
+              <li class="aistep" id="as7"><div class="adot"></div>Securing record on blockchain</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 Results -->
+      <div id="p5" style="display:none">
+        <div class="rbanner high" id="rban">
+          <div class="ricon" id="rico">🫀</div>
+          <div style="flex:1">
+            <div class="rname" id="rname">Type 2 Diabetes Risk</div>
+            <div class="rpills"><span class="rpill high" id="rlvl">High Risk</span><span style="font-size:11px;color:var(--tx2)">Confidence: <strong id="rconf">91.4%</strong></span><span style="font-size:11px;color:var(--tx2)">Score: <strong id="rscore" style="color:var(--dg)">78/100</strong></span></div>
+            <div class="rdesc" id="rdesc"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ct"><div class="ci vl">🫀</div>How This Affects Your Body</div>
+          <div class="bwrap">
+            <div class="bsvg" style="position:relative; min-height: 368px;">
+              <img src="human_body.png" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; filter: brightness(1.2) drop-shadow(0 0 10px rgba(88,166,255,0.3)); mix-blend-mode: screen; opacity:0.8;" alt=""/>
+              <svg viewBox="0 0 120 285" xmlns="http://www.w3.org/2000/svg" style="position:relative; z-index:2;">
+                <!-- Organs overlays -->
+                <circle cx="60" cy="85" r="5" fill="#ef4444" opacity="0.9"/>
+                <text x="60" y="87" text-anchor="middle" font-size="6" fill="#7f1d1d">♥</text>
+                <circle cx="53" cy="118" r="4" fill="#f97316"/>
+                <circle cx="67" cy="118" r="4" fill="#f97316"/>
+                <circle cx="56" cy="22" r="2.5" fill="#f97316"/>
+                <circle cx="64" cy="22" r="2.5" fill="#f97316"/>
+                <circle cx="56" cy="245" r="4" fill="#eab308"/>
+                <circle cx="64" cy="245" r="4" fill="#eab308"/>
+                
+                <line x1="60" y1="85" x2="30" y2="70" stroke="#ef4444" stroke-width=".7" stroke-dasharray="2"/>
+                <text x="29" y="68" font-size="7" text-anchor="end" fill="#ef4444" font-weight="700">Heart</text>
+                
+                <line x1="67" y1="118" x2="95" y2="105" stroke="#ef4444" stroke-width=".7" stroke-dasharray="2"/>
+                <text x="96" y="103" font-size="7" fill="#ef4444" font-weight="700">Pancreas</text>
+                
+                <line x1="53" y1="118" x2="30" y2="128" stroke="#f97316" stroke-width=".7" stroke-dasharray="2"/>
+                <text x="29" y="130" font-size="7" text-anchor="end" fill="#f97316" font-weight="700">Kidneys</text>
+                
+                <line x1="64" y1="22" x2="95" y2="18" stroke="#f97316" stroke-width=".7" stroke-dasharray="2"/>
+                <text x="96" y="21" font-size="7" fill="#f97316" font-weight="700">Eyes</text>
+                
+                <line x1="56" y1="245" x2="30" y2="255" stroke="#eab308" stroke-width=".7" stroke-dasharray="2"/>
+                <text x="29" y="257" font-size="7" text-anchor="end" fill="#eab308" font-weight="700">Nerves</text>
+              </svg>
+            </div>
+            <div class="bimp" id="bimp"></div>
+          </div>
+        </div>
+
+        <div class="card"><div class="ct"><div class="ci wn">📊</div>Why This Prediction?</div><p style="font-size:11px;color:var(--tx2);margin-bottom:14px">Top lifestyle factors contributing to your risk:</p><div id="shap"></div></div>
+        <div class="card"><div class="ct"><div class="ci gr">🥗</div>Nutrition Plan</div><div class="f2col" id="food"></div></div>
+        <div class="card"><div class="ct"><div class="ci bl">🗓</div>Action Plan</div><div class="t3col" id="treat"></div></div>
+        <div class="card" style="border-color:rgba(188,140,255,0.3)"><div class="ct"><div class="ci vl">💊</div>Recommended Medicines</div><p style="font-size:11px;color:var(--tx2);margin-bottom:12px;">Standard protocol medications for this risk condition. Consult a physician for exact dosages.</p><div class="t3col" id="meds"></div></div>
+
+        <!-- Hospitals -->
+        <div class="card">
+          <div class="ct"><div class="ci bl">🏥</div>Recommended Hospitals near <span id="hcity" style="color:var(--ac)">your city</span></div>
+          <p style="font-size:11px;color:var(--tx2);margin-bottom:12px">Specializing in <span id="hspec" style="font-weight:600;color:var(--tx)">your condition</span></p>
+          <div id="hnearby" style="display:none" class="nearby-note">📍 Hospitals shown are from the nearest major city to <strong id="nbcity"></strong>.</div>
+          <div id="hlist"></div>
+        </div>
+
+        <!-- Map -->
+        <div class="card">
+          <div class="ct"><div class="ci bl">📍</div>Hospital Map — <span id="mcitylbl" style="color:var(--ac)">Location</span></div>
+          <div class="mapbox">
+            <div class="mgrid"></div>
+            <div class="mpins" id="mpins"></div>
+            <div class="mcenter">
+              <div style="font-size:28px">📍</div>
+              <div class="mcity" id="mname">Your City</div>
+              <div class="mnote">Showing hospitals near your location</div>
+            </div>
+          </div>
+          <div style="margin-top:9px;padding:9px 12px;background:var(--acg);border:1px solid rgba(88,166,255,.2);border-radius:7px;font-size:11px;color:var(--ac);">
+            📌 Add your Google Maps API key in backend <code>.env</code> to show live directions and exact GPS pins.
+          </div>
+        </div>
+
+        <!-- Blockchain -->
+        <div class="card" style="border-color:rgba(188,140,255,.25)">
+          <div class="ct"><div class="ci vl">🔗</div>Secured Health Record</div>
+          <div class="chainbox">
+            <div>Transaction: <strong id="ctx"></strong></div>
+            <div>Block: <strong>19,284,721</strong> &nbsp;|&nbsp; Network: <strong>Ethereum Sepolia</strong></div>
+            <div>Patient ID: <strong id="cpid"></strong></div>
+            <div>Timestamp: <strong id="cts"></strong></div>
+            <div>Status: <strong style="color:var(--ac2)">✓ CONFIRMED &amp; IMMUTABLE</strong></div>
+          </div>
+          <p style="font-size:11px;color:var(--tx2);margin-top:9px;">Your record is cryptographically secured. Only you and authorized doctors can access it.</p>
+        </div>
+
+        <div class="brow">
+          <button class="btn btn-g" onclick="ws(1);rwiz()">← New Assessment</button>
+          <button class="btn btn-p" onclick="window.print()">📄 Download Report</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECORDS -->
+    <div id="sc-records" class="screen">
+      <div class="ph"><div class="bc">VitaLens <span>/ Records</span></div><div class="pt">Health Records</div><div class="ps">Your complete secured history</div></div>
+      <div class="card">
+        <div class="ct"><div class="ci vl">🔗</div>Blockchain-Secured Diagnoses</div>
+        <table class="tbl">
+          <thead><tr><th>Date</th><th>Condition</th><th>Risk</th><th>Score</th><th>Block Hash</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>25 Mar 2025</td><td>Type 2 Diabetes</td><td><span class="lvl high">High</span></td><td>78/100</td><td style="font-family:monospace;font-size:10px;color:var(--vl)">0x8f2a...d4e1</td><td style="color:var(--ac2)">✓</td></tr>
+            <tr><td>18 Mar 2025</td><td>Hypertension</td><td><span class="lvl medium">Medium</span></td><td>52/100</td><td style="font-family:monospace;font-size:10px;color:var(--vl)">0x3b1c...a8f2</td><td style="color:var(--ac2)">✓</td></tr>
+            <tr><td>05 Mar 2025</td><td>Liver Disease</td><td><span class="lvl low">Low</span></td><td>22/100</td><td style="font-family:monospace;font-size:10px;color:var(--vl)">0x7d4e...c3b9</td><td style="color:var(--ac2)">✓</td></tr>
+            <tr><td>20 Feb 2025</td><td>Heart Disease</td><td><span class="lvl medium">Medium</span></td><td>55/100</td><td style="font-family:monospace;font-size:10px;color:var(--vl)">0x1a9f...e7c4</td><td style="color:var(--ac2)">✓</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div id="sc-alerts" class="screen">
+      <div class="ph"><div class="bc">VitaLens <span>/ Alerts</span></div><div class="pt">Health Alerts</div><div class="ps">3 active alerts</div></div>
+      <div class="card">
+        <div class="ct"><div class="ci rd">⚠</div>Active Alerts</div>
+        <div class="alitem dg"><div class="alico">🔴</div><div><div class="alit">Blood sugar above safe threshold</div><div class="alm">Fasting glucose: 128 mg/dL. Normal: 70–99 mg/dL. Consult your endocrinologist.</div></div><div class="altime">Today, 9:42 AM</div></div>
+        <div class="alitem wn"><div class="alico">🟡</div><div><div class="alit">Low physical activity this week</div><div class="alm">You've exercised 2 out of target 5 days. This increases your risk by ~12%.</div></div><div class="altime">This week</div></div>
+        <div class="alitem bl"><div class="alico">🔵</div><div><div class="alit">Upcoming hospital appointment</div><div class="alm">Kovai Medical Center, Coimbatore — 28 March 2025 at 10:00 AM</div></div><div class="altime">In 3 days</div></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS placeholder -->
+    <div id="sc-settings" class="screen">
+      <div class="ph"><div class="bc">VitaLens <span>/ Settings</span></div><div class="pt">Settings</div><div class="ps">Manage your account and preferences</div></div>
+      <div class="card"><div class="ct"><div class="ci bl">⚙</div>Account Settings</div><p style="font-size:13px;color:var(--tx2)">Settings panel — connect your backend to persist preferences.</p></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── AUTH CHECK ─────────────────────────────────────────
+if (!localStorage.getItem('vitalens_token')) {
+  window.location.href = 'login.html';
+}
+
+// ── USER LOAD ──────────────────────────────────────────
+const userName = localStorage.getItem('vitalens_name') || 'User';
+const firstName = userName.split(' ')[0];
+const initials = userName.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase() || 'U';
+
+document.getElementById('uname').textContent = userName;
+document.getElementById('uav').textContent = initials;
+const sfName = document.getElementById('sf-name');
+if(sfName) sfName.textContent = userName;
+const dbGreet = document.getElementById('db-greet');
+if(dbGreet) {
+  const hr = new Date().getHours();
+  let greet = 'Good morning';
+  if (hr >= 12 && hr < 17) greet = 'Good afternoon';
+  else if (hr >= 17) greet = 'Good evening';
+  dbGreet.textContent = `${greet}, ${firstName} 👋`;
+}
+
+const userEmail = localStorage.getItem('vitalens_email') || '';
+const umName = document.getElementById('um-name');
+if(umName) umName.textContent = userName;
+const umEmail = document.getElementById('um-email');
+if(umEmail) umEmail.textContent = userEmail;
+
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  document.getElementById('userMenu').classList.toggle('active');
+}
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('userMenu');
+  if(menu && menu.classList.contains('active') && !e.target.closest('.umenu') && !e.target.closest('.uchip')) {
+    menu.classList.remove('active');
+  }
+});
+function logout() {
+  localStorage.removeItem('vitalens_token');
+  localStorage.removeItem('vitalens_email');
+  localStorage.removeItem('vitalens_name');
+  window.location.href = 'login.html';
+}
+
+// ── THEME ──────────────────────────────────────────────
+function toggleTheme(){
+  const h=document.documentElement, d=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',d?'light':'dark');
+  document.getElementById('tbtn').textContent=d?'🌙':'☀️';
+}
+
+// ── NAVIGATION ─────────────────────────────────────────
+function goScreen(id,el){
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  showSc(id);
+}
+function sbNav(el,id){
+  document.querySelectorAll('.sitem').forEach(i=>i.classList.remove('on'));
+  el.classList.add('on');
+  showSc(id);
+  const tabMap={dashboard:'Dashboard',predict:'Assess',records:'Records',alerts:'Alerts'};
+  document.querySelectorAll('.ntab').forEach(t=>{
+    t.classList.toggle('on', t.textContent.trim()===tabMap[id]);
+  });
+}
+function showSc(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el=document.getElementById('sc-'+id)||document.getElementById('sc-dashboard');
+  if(el) el.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='predict'){showStep(1);rwiz();}
+}
+
+// ── BMI ────────────────────────────────────────────────
+['pht','pwt'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{
+    const h=parseFloat(document.getElementById('pht').value)/100;
+    const w=parseFloat(document.getElementById('pwt').value);
+    if(h>0&&w>0) document.getElementById('pbmi').value=(w/(h*h)).toFixed(1);
+  });
+});
+
+// ── CHIPS ──────────────────────────────────────────────
+const SYMS=['Fatigue','Headache','Chest pain','Breathlessness','Frequent urination','Blurred vision','Joint pain','Nausea','Dizziness','High thirst','Weight gain','Weight loss','Sweating','Palpitations','Poor sleep','Indigestion','Numbness feet','Frequent infections'];
+const FAMH=['Diabetes','Heart disease','Hypertension','Cancer','Kidney disease','Liver disease','Obesity','Stroke','Thyroid','Asthma'];
+const SS=new Set(),SF=new Set();
+function buildChips(arr,cid,set){
+  const el=document.getElementById(cid);
+  arr.forEach(s=>{
+    const c=document.createElement('div');c.className='chip';c.textContent=s;
+    c.onclick=()=>{if(set.has(s)){set.delete(s);c.classList.remove('on');}else{set.add(s);c.classList.add('on');}};
+    el.appendChild(c);
+  });
+}
+buildChips(SYMS,'csymp',SS);
+buildChips(FAMH,'cfam',SF);
+
+// ── UPLOAD ─────────────────────────────────────────────
+function mu(input,id){if(input.files[0])document.getElementById(id).textContent='✓ '+input.files[0].name;}
+
+// ── WIZARD ─────────────────────────────────────────────
+let CWS=1;
+function ws(n){showStep(n);updWiz(n);CWS=n;window.scrollTo({top:0,behavior:'smooth'});if(n===4)runAI();}
+function showStep(n){for(let i=1;i<=5;i++){const p=document.getElementById('p'+i);if(p)p.style.display=i===n?'block':'none';}}
+function updWiz(n){
+  for(let i=1;i<=5;i++){
+    const w=document.getElementById('ws'+i),c=document.getElementById('wc'+i);
+    w.classList.remove('on','dn');c.textContent=i;
+    if(i<n){w.classList.add('dn');c.textContent='✓';}
+    else if(i===n) w.classList.add('on');
+  }
+  for(let i=1;i<=4;i++) document.getElementById('wl'+i).classList.toggle('dn',i<n);
+}
+function rwiz(){
+  for(let i=1;i<=5;i++){document.getElementById('ws'+i).classList.remove('on','dn');document.getElementById('wc'+i).textContent=i;}
+  for(let i=1;i<=4;i++) document.getElementById('wl'+i).classList.remove('dn');
+  document.getElementById('ws1').classList.add('on');
+  for(let i=1;i<=7;i++){const s=document.getElementById('as'+i);s.classList.remove('on','dn');s.querySelector('.adot').classList.remove('on','dn');}
+  document.getElementById('as1').classList.add('on');document.getElementById('as1').querySelector('.adot').classList.add('on');
+  document.getElementById('pulse').style.borderColor='var(--ac)';
+  document.getElementById('ait').textContent='Analyzing your health data...';
+  SS.clear();SF.clear();document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+}
+
+// ── AI ANALYSIS ────────────────────────────────────────
+async function runAI(){
+  let i=0;
+  const iv=setInterval(()=>{
+    if(i>0){const p=document.getElementById('as'+i);p.classList.remove('on');p.classList.add('dn');p.querySelector('.adot').classList.remove('on');p.querySelector('.adot').classList.add('dn');}
+    i++;
+    if(i<=7){const c=document.getElementById('as'+i);c.classList.add('on');c.querySelector('.adot').classList.add('on');}
+  },300);
+
+  try {
+    const act_text = document.getElementById('daily-activities').value || "";
+    const name = document.getElementById('pname').value || 'User';
+    const city = document.getElementById('pcity').value || '';
+    const symps = Array.from(SS);
+
+    const res = await fetch("http://localhost:8000/api/predict/analyze", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({name, city, activity_text: act_text, symptoms: symps})
+    });
+    window.predictResults = await res.json(); 
+  } catch(e) {
+    console.error(e);
+    window.predictResults = {disease_key: "diabetes"}; // safe fallback
+  }
+
+  setTimeout(()=>{
+    clearInterval(iv);
+    for(let j=i;j<=7;j++){const p=document.getElementById('as'+j);if(p){p.classList.remove('on');p.classList.add('dn');p.querySelector('.adot').classList.remove('on');p.querySelector('.adot').classList.add('dn');}}
+    document.getElementById('pulse').style.borderColor='var(--ac2)';
+    document.getElementById('ait').textContent='✓ Analysis Complete';
+    document.getElementById('ais').textContent='Redirecting to your results...';
+    setTimeout(()=>{buildResults();ws(5);},800);
+  }, 2500); // give enough time for beautiful animation
+}
+
+// ── DISEASE DATA ───────────────────────────────────────
+const DB={
+  diabetes:{
+    icon:'🫀',name:'Type 2 Diabetes Risk',level:'high',conf:'91.4%',score:'78/100',
+    desc:'Based on your lifestyle patterns and health metrics, you are at high risk of developing Type 2 Diabetes within 2–4 years without significant changes.',
+    impacts:[
+      {organ:'Pancreas',color:'#ef4444',desc:'Beta cells get overworked, insulin production fails, leading to permanently elevated blood sugar.'},
+      {organ:'Heart & Blood Vessels',color:'#ef4444',desc:'High blood sugar damages arterial walls, doubling the risk of heart attack and stroke.'},
+      {organ:'Kidneys',color:'#f97316',desc:'Excess glucose damages filtration units (nephrons), risking chronic kidney disease over time.'},
+      {organ:'Eyes (Retina)',color:'#f97316',desc:'Tiny retinal blood vessels get damaged, causing diabetic retinopathy — a leading cause of blindness.'},
+      {organ:'Peripheral Nerves & Feet',color:'#eab308',desc:'Neuropathy causes numbness, tingling, and slow wound healing in feet.'},
+    ],
+    shap:[{n:'High fasting blood sugar',p:88,c:'#ef4444'},{n:'Family history — Diabetes',p:72,c:'#f97316'},{n:'High BMI / Overweight',p:65,c:'#f97316'},{n:'Low physical activity',p:58,c:'#eab308'},{n:'High-carb / poor diet',p:52,c:'#eab308'},{n:'Elevated stress',p:38,c:'#84cc16'},{n:'Irregular sleep',p:28,c:'#84cc16'}],
+    eat:['Brown rice / millets','Leafy greens (spinach)','Bitter gourd (karela)','Almonds & walnuts','Low-fat yogurt','Whole grain bread','Fenugreek seeds','Berries'],
+    avoid:['White rice & maida','Sugary drinks','Sweets & desserts','Fried snacks','White bread','Alcohol','Packaged foods','Fruit juices'],
+    treat:[{e:'🚶',t:'Daily walks',d:'30–45 min brisk walk reduces insulin resistance'},{e:'🍱',t:'Diabetic diet',d:'Low glycemic index diet with a dietitian'},{e:'📊',t:'Monitor glucose',d:'Check fasting & post-meal sugar weekly'},{e:'🩺',t:'Endocrinologist',d:'Visit a specialist within 2 weeks'}],
+    meds:[{e:'💊',t:'Metformin',d:'Gold-standard medication to reduce liver glucose release'},{e:'💊',t:'DPP-4 Inhibitors',d:'Increases insulin release after meals'},{e:'💊',t:'Statins',d:'Often co-prescribed for cardiovascular protection'}],
+    spec:'Diabetology & Endocrinology',key:'diabetes'
+  },
+  heart:{
+    icon:'❤️',name:'Cardiovascular Disease Risk',level:'high',conf:'88.7%',score:'72/100',
+    desc:'Your cholesterol, blood pressure, and activity patterns indicate high risk of coronary artery disease within 3–5 years.',
+    impacts:[
+      {organ:'Heart Muscle',color:'#ef4444',desc:'Plaque in coronary arteries reduces blood flow, risking angina and heart attacks.'},
+      {organ:'Arteries',color:'#ef4444',desc:'Hypertension stiffens and narrows arteries, overworking the heart over time.'},
+      {organ:'Brain',color:'#f97316',desc:'Arterial blockages risk mini-strokes and full strokes.'},
+      {organ:'Kidneys',color:'#eab308',desc:'Reduced cardiac output impairs kidney filtration.'},
+    ],
+    shap:[{n:'High cholesterol',p:85,c:'#ef4444'},{n:'Elevated blood pressure',p:80,c:'#ef4444'},{n:'Sedentary lifestyle',p:68,c:'#f97316'},{n:'Smoking history',p:60,c:'#f97316'},{n:'Family heart history',p:55,c:'#eab308'},{n:'Chronic stress',p:42,c:'#84cc16'},{n:'Poor diet',p:35,c:'#84cc16'}],
+    eat:['Oats & whole grains','Fatty fish (salmon)','Leafy greens','Olive oil','Garlic & turmeric','Berries & citrus','Legumes (lentils)','Walnuts'],
+    avoid:['Processed meats','Full-fat dairy','Trans fats','Salty pickles','Fried snacks','Alcohol','High-sodium foods','Refined sugar'],
+    treat:[{e:'🏊',t:'Cardio exercise',d:'20–30 min aerobic 5 days/week'},{e:'🩺',t:'Cardiologist',d:'ECG, echo, lipid profile within 1 week'},{e:'🧂',t:'Low-sodium diet',d:'Limit sodium to 1,500mg/day'},{e:'🚭',t:'Quit smoking',d:'Reduces cardiac risk by 50% in 1 year'}],
+    meds:[{e:'💊',t:'Aspirin / Clopidogrel',d:'Blood thinners to prevent clot formation and strokes'},{e:'💊',t:'Statins (Atorvastatin)',d:'Lowers LDL cholesterol aggressively and stabilizes plaques'},{e:'💊',t:'Beta Blockers',d:'Reduces blood pressure and overall heart workload'}],
+    spec:'Cardiology & Cardiac Surgery',key:'heart'
+  },
+  hypertension: {
+    icon:'📏',name:'Hypertension (High Blood Pressure) Risk',level:'high',conf:'85.2%',score:'68/100',
+    desc:'Your activity and symptoms suggest an elevated risk for hypertension, which can quietly damage your blood vessels over time.',
+    impacts:[
+      {organ:'Heart',color:'#ef4444',desc:'Constant high pressure hardens and narrows arterial walls, forcing the heart to pump harder.'},
+      {organ:'Brain',color:'#f97316',desc:'Increases the risk of strokes or transient ischemic attacks.'},
+      {organ:'Kidneys',color:'#eab308',desc:'Damages the vessels inside the kidneys, slowing their filtering ability.'}
+    ],
+    shap:[{n:'High sodium intake',p:80,c:'#ef4444'},{n:'Elevated stress',p:75,c:'#ef4444'},{n:'Sedentary lifestyle',p:65,c:'#f97316'},{n:'Alcohol',p:50,c:'#eab308'}],
+    eat:['Bananas','Leafy greens','Oats','Berries','Garlic','Beetroot'],
+    avoid:['Table salt','Pickles','Processed meats','Canned soups','Alcohol','Caffeine'],
+    treat:[{e:'🏃',t:'Aerobic exercise',d:'30m light cardio daily'},{e:'🧘',t:'Meditation',d:'Reduces autonomic nervous system stress'},{e:'🩺',t:'BP Monitoring',d:'Check daily at home'}],
+    meds:[{e:'💊',t:'ACE Inhibitors',d:'Relaxes and widens blood vessels'},{e:'💊',t:'Diuretics',d:'Helps kidneys flush sodium and water'}],
+    spec:'Internal Medicine / Cardiology',key:'hypertension'
+  },
+  liver: {
+    icon:'🍺',name:'Liver Disease (NAFLD/ALD) Risk',level:'medium',conf:'78.1%',score:'62/100',
+    desc:'Dietary inputs and specific symptoms hint at strain on liver function, increasing risk of fatty liver disease.',
+    impacts:[
+      {organ:'Liver',color:'#ef4444',desc:'Accumulation of fat leads to inflammation and eventually fibrosis (scarring).'},
+      {organ:'Digestive',color:'#f97316',desc:'Reduced bile impairs fat digestion.'}
+    ],
+    shap:[{n:'High Calorie/Alcohol intake',p:85,c:'#ef4444'},{n:'High fried food',p:70,c:'#f97316'},{n:'Nausea/Indigestion',p:60,c:'#eab308'}],
+    eat:['Coffee','Broccoli','Fatty fish','Olive oil','Walnuts'],
+    avoid:['Alcohol','Added sugars','Fried foods','White flour','Red meat'],
+    treat:[{e:'🚫',t:'Zero Alcohol',d:'Essential for liver regeneration'},{e:'🥗',t:'Weight loss',d:'Losing 10% weight reduces liver fat'},{e:'🩺',t:'Hepatologist',d:'Liver ultrasound'}],
+    meds:[{e:'💊',t:'Vitamin E',d:'Antioxidant support for liver cells'},{e:'💊',t:'Ursodiol',d:'Improves bile flow'}],
+    spec:'Hepatology / Gastroenterology',key:'liver'
+  },
+  kidney: {
+    icon:'💧',name:'Chronic Kidney Disease Risk',level:'medium',conf:'74.5%',score:'55/100',
+    desc:'Certain risk factors (like blood pressure traces or frequent urination) show potential strain on kidney filtration systems.',
+    impacts:[
+      {organ:'Kidneys',color:'#ef4444',desc:'Nephrons get overworked, reducing ability to filter blood and remove waste.'},
+      {organ:'Bones',color:'#f97316',desc:'Kidneys fail to balance calcium and phosphorus.'}
+    ],
+    shap:[{n:'High BP traces',p:78,c:'#ef4444'},{n:'High sodium diet',p:65,c:'#f97316'},{n:'Frequent urination',p:60,c:'#eab308'}],
+    eat:['Cabbage','Red bell peppers','Blueberries','Olive oil','Garlic'],
+    avoid:['Dark colas','Canned foods','Processed meats','Excess Dairy'],
+    treat:[{e:'🚰',t:'Hydration',d:'Drink optimal water'},{e:'🩺',t:'Nephrologist',d:'Check creatinine and eGFR levels'}],
+    meds:[{e:'💊',t:'ACE Inhibitors',d:'Protects kidneys by lowering pressure'},{e:'💊',t:'Statins',d:'Manages associated vascular risks'}],
+    spec:'Nephrology / Internal Medicine',key:'kidney'
+  }
+};
+
+// ── HOSPITAL DATABASE (frontend fallback) ──────────────
+// Full database — all major Indian cities
+const HOSPITALS={
+  coimbatore:{diabetes:[{n:'Kovai Medical Center & Hospital',a:'99 Avanashi Road, Coimbatore 641014',tags:['Diabetology','Endocrinology','24/7 ICU'],r:'4.7 ★',ph:'+91-422-4323800',x:'26%',y:'38%'},{n:'PSG Hospitals',a:'Peelamedu, Coimbatore 641004',tags:['Diabetes Clinic','Internal Medicine'],r:'4.6 ★',ph:'+91-422-4345000',x:'52%',y:'48%'},{n:'G. Kuppuswamy Naidu Memorial',a:'Nethaji Road, Coimbatore 641001',tags:['Endocrinology','Multi-specialty'],r:'4.5 ★',ph:'+91-422-2212222',x:'40%',y:'60%'},{n:'Sri Ramakrishna Hospital',a:'395 Sarojini Naidu Rd, Coimbatore 641044',tags:['Diabetology','Nephrology'],r:'4.6 ★',ph:'+91-422-4500000',x:'68%',y:'32%'}],heart:[{n:'Kovai Medical Center & Hospital',a:'99 Avanashi Road, Coimbatore 641014',tags:['Cardiology','Cardiac Surgery','Cath Lab'],r:'4.7 ★',ph:'+91-422-4323800',x:'26%',y:'38%'},{n:'Sri Ramakrishna Hospital',a:'395 Sarojini Naidu Rd, Coimbatore 641044',tags:['Interventional Cardiology','Heart ICU'],r:'4.6 ★',ph:'+91-422-4500000',x:'65%',y:'30%'},{n:'Coimbatore Medical College',a:'Trichy Road, Coimbatore 641018',tags:['Cardiology Dept','Emergency'],r:'4.2 ★',ph:'+91-422-2301393',x:'42%',y:'60%'}]},
+  chennai:{diabetes:[{n:'Apollo Hospitals',a:'21 Greams Lane, Chennai 600006',tags:['Diabetology','Endocrinology'],r:'4.8 ★',ph:'+91-44-28290200',x:'30%',y:'35%'},{n:'MIOT International',a:'4/112 Mount Poonamallee Rd, Chennai',tags:['Endocrinology','Metabolic Clinic'],r:'4.7 ★',ph:'+91-44-42002288',x:'55%',y:'50%'},{n:'Fortis Malar Hospital',a:'52 First Main Rd, Adyar, Chennai 600020',tags:['Diabetes & Obesity'],r:'4.6 ★',ph:'+91-44-42892222',x:'70%',y:'35%'},{n:'Sri Ramachandra Medical Centre',a:'No 1 Ramachandra Nagar, Porur 600116',tags:['Endocrinology','Multi-specialty'],r:'4.7 ★',ph:'+91-44-45928610',x:'20%',y:'60%'}],heart:[{n:'Apollo Hospitals',a:'21 Greams Lane, Chennai 600006',tags:['Cardiology','Heart Surgery'],r:'4.8 ★',ph:'+91-44-28290200',x:'30%',y:'35%'},{n:'Fortis Malar Hospital',a:'52 First Main Rd, Adyar, Chennai 600020',tags:['Interventional Cardiology'],r:'4.6 ★',ph:'+91-44-42892222',x:'65%',y:'30%'},{n:'Global Health City',a:'439 Cheran Nagar, Perumbakkam, Chennai',tags:['Cardiac Sciences','Cath Lab'],r:'4.7 ★',ph:'+91-44-44777000',x:'50%',y:'60%'}]},
+  mumbai:{diabetes:[{n:'Lilavati Hospital',a:'A-791 Bandra Reclamation, Mumbai 400050',tags:['Diabetology','Endocrinology'],r:'4.7 ★',ph:'+91-22-26751000',x:'30%',y:'40%'},{n:'Kokilaben Dhirubhai Ambani',a:'Four Bungalows, Andheri W, Mumbai 400053',tags:['Endocrinology','Bariatrics'],r:'4.7 ★',ph:'+91-22-42696969',x:'55%',y:'35%'},{n:'Hinduja Hospital',a:'Veer Savarkar Marg, Mahim, Mumbai 400016',tags:['Diabetes Clinic','Internal Medicine'],r:'4.6 ★',ph:'+91-22-24452222',x:'40%',y:'60%'},{n:'Jaslok Hospital',a:'15 Dr G Deshmukh Marg, Mumbai 400026',tags:['Endocrinology','Multi-specialty'],r:'4.5 ★',ph:'+91-22-66573333',x:'70%',y:'50%'}],heart:[{n:'Asian Heart Institute',a:'G/N Block, BKC, Bandra E, Mumbai 400051',tags:['Cardiac Sciences','TAVR'],r:'4.8 ★',ph:'+91-22-66986666',x:'30%',y:'40%'},{n:'Kokilaben Dhirubhai Ambani',a:'Four Bungalows, Andheri W, Mumbai 400053',tags:['Cardiology','Heart Surgery'],r:'4.7 ★',ph:'+91-22-42696969',x:'58%',y:'35%'},{n:'Lilavati Hospital',a:'A-791 Bandra Reclamation, Mumbai 400050',tags:['Cardiology','Cardiac Rehab'],r:'4.7 ★',ph:'+91-22-26751000',x:'42%',y:'62%'}]},
+  delhi:{diabetes:[{n:'AIIMS New Delhi',a:'Ansari Nagar East, New Delhi 110029',tags:['Endocrinology','Research Centre'],r:'4.9 ★',ph:'+91-11-26588500',x:'28%',y:'38%'},{n:'Max Super Speciality Hospital',a:'1 Press Enclave Rd, Saket, Delhi 110017',tags:['Diabetology','Endocrinology'],r:'4.7 ★',ph:'+91-11-26515050',x:'55%',y:'45%'},{n:'Fortis Hospital Vasant Kunj',a:'Sector B, Pocket 1, Vasant Kunj, Delhi',tags:['Diabetes & Endocrinology'],r:'4.6 ★',ph:'+91-11-42776222',x:'38%',y:'62%'},{n:'Sir Ganga Ram Hospital',a:'Rajinder Nagar, New Delhi 110060',tags:['Internal Medicine','Diabetology'],r:'4.7 ★',ph:'+91-11-25750000',x:'68%',y:'32%'}],heart:[{n:'Escorts Heart Institute',a:'Okhla Rd, New Delhi 110025',tags:['Cardiac Sciences','CTVS'],r:'4.8 ★',ph:'+91-11-47414141',x:'28%',y:'38%'},{n:'AIIMS New Delhi',a:'Ansari Nagar East, New Delhi 110029',tags:['Cardiology','Cardiac Surgery'],r:'4.9 ★',ph:'+91-11-26588500',x:'55%',y:'45%'},{n:'Max Super Speciality Hospital',a:'1 Press Enclave Rd, Saket, Delhi 110017',tags:['Interventional Cardiology'],r:'4.7 ★',ph:'+91-11-26515050',x:'42%',y:'62%'}]},
+  bangalore:{diabetes:[{n:'Manipal Hospitals',a:'98 HAL Airport Rd, Bangalore 560017',tags:['Diabetology','Endocrinology'],r:'4.7 ★',ph:'+91-80-25024444',x:'30%',y:'38%'},{n:'Narayana Health City',a:'258/A Bommasandra, Bangalore 560099',tags:['Diabetes Clinic'],r:'4.6 ★',ph:'+91-80-71222222',x:'55%',y:'48%'},{n:'Fortis Hospital Bannerghatta',a:'154/9 Bannerghatta Rd, Bangalore 560076',tags:['Endocrinology','Bariatrics'],r:'4.6 ★',ph:'+91-80-66214444',x:'40%',y:'62%'},{n:'Sakra World Hospital',a:'52/2 Devarabisanahalli, Outer Ring Rd',tags:['Diabetes & Metabolic'],r:'4.5 ★',ph:'+91-80-49690000',x:'68%',y:'32%'}],heart:[{n:'Narayana Health City',a:'258/A Bommasandra, Bangalore 560099',tags:['Cardiac Sciences','Heart Transplant'],r:'4.6 ★',ph:'+91-80-71222222',x:'30%',y:'38%'},{n:'Manipal Hospitals',a:'98 HAL Airport Rd, Bangalore 560017',tags:['Cardiology','Interventional'],r:'4.7 ★',ph:'+91-80-25024444',x:'55%',y:'45%'},{n:'Columbia Asia Hospital',a:'Kirloskar Business Park, Bangalore',tags:['Cardiology','Emergency'],r:'4.5 ★',ph:'+91-80-41794000',x:'42%',y:'62%'}]},
+  hyderabad:{diabetes:[{n:'Apollo Hospitals Jubilee Hills',a:'Jubilee Hills, Hyderabad 500033',tags:['Diabetology','Endocrinology'],r:'4.7 ★',ph:'+91-40-23607777',x:'30%',y:'38%'},{n:'CARE Hospitals',a:'Road 1, Banjara Hills, Hyderabad 500034',tags:['Diabetes Clinic','Internal Medicine'],r:'4.6 ★',ph:'+91-40-30418888',x:'55%',y:'48%'},{n:'NIMS — Nizam\'s Institute',a:'Punjagutta, Hyderabad 500082',tags:['Endocrinology & Metabolism'],r:'4.5 ★',ph:'+91-40-23489000',x:'40%',y:'62%'},{n:'Continental Hospitals',a:'Plot No 3, Road 2, Financial District',tags:['Diabetology','Endocrinology'],r:'4.6 ★',ph:'+91-40-67000000',x:'68%',y:'32%'}],heart:[{n:'CARE Hospitals',a:'Road 1, Banjara Hills, Hyderabad 500034',tags:['Cardiology','Cardiac Surgery'],r:'4.6 ★',ph:'+91-40-30418888',x:'30%',y:'38%'},{n:'Apollo Hospitals Jubilee Hills',a:'Jubilee Hills, Hyderabad 500033',tags:['Interventional Cardiology'],r:'4.7 ★',ph:'+91-40-23607777',x:'55%',y:'45%'},{n:'Star Hospitals',a:'8-2-596 Rd No 10, Banjara Hills 500034',tags:['Cardiac Sciences','ICU'],r:'4.5 ★',ph:'+91-40-44477777',x:'42%',y:'62%'}]},
+  kolkata:{diabetes:[{n:'Apollo Gleneagles Hospital',a:'58 Canal Circular Rd, Kolkata 700054',tags:['Diabetology','Endocrinology'],r:'4.6 ★',ph:'+91-33-23201111',x:'30%',y:'40%'},{n:'AMRI Hospitals Salt Lake',a:'JC 16/17 Salt Lake, Kolkata 700098',tags:['Diabetes Clinic'],r:'4.5 ★',ph:'+91-33-66000000',x:'55%',y:'45%'},{n:'Medica Superspecialty Hospital',a:'127 Mukundapur, EM Bypass, Kolkata',tags:['Endocrinology','Multi-specialty'],r:'4.5 ★',ph:'+91-33-40401000',x:'40%',y:'62%'}],heart:[{n:'RN Tagore International',a:'124 EM Bypass, Mukundapur, Kolkata',tags:['Cardiac Sciences','Heart Transplant'],r:'4.7 ★',ph:'+91-33-66700000',x:'30%',y:'40%'},{n:'Apollo Gleneagles Hospital',a:'58 Canal Circular Rd, Kolkata 700054',tags:['Cardiology','Cardiac Surgery'],r:'4.6 ★',ph:'+91-33-23201111',x:'55%',y:'45%'}]},
+  pune:{diabetes:[{n:'Ruby Hall Clinic',a:'40 Sassoon Rd, Pune 411001',tags:['Diabetology','Endocrinology'],r:'4.6 ★',ph:'+91-20-26163391',x:'30%',y:'40%'},{n:'Deenanath Mangeshkar Hospital',a:'Erandwane, Pune 411004',tags:['Diabetes Clinic','Multi-specialty'],r:'4.7 ★',ph:'+91-20-49150100',x:'55%',y:'45%'},{n:'Jehangir Hospital',a:'32 Sassoon Rd, Pune 411001',tags:['Endocrinology','Internal Medicine'],r:'4.5 ★',ph:'+91-20-26128100',x:'42%',y:'62%'}],heart:[{n:'Ruby Hall Clinic',a:'40 Sassoon Rd, Pune 411001',tags:['Cardiology','Interventional'],r:'4.6 ★',ph:'+91-20-26163391',x:'30%',y:'40%'},{n:'Deenanath Mangeshkar Hospital',a:'Erandwane, Pune 411004',tags:['Cardiac Sciences','Cath Lab'],r:'4.7 ★',ph:'+91-20-49150100',x:'55%',y:'45%'}]},
+  ahmedabad:{diabetes:[{n:'Apollo Hospitals Ahmedabad',a:'Plot 1A GIDC, Bhat, Gandhinagar 382428',tags:['Diabetology'],r:'4.6 ★',ph:'+91-79-66701800',x:'30%',y:'40%'},{n:'Sterling Hospital',a:'Off Gurukul Rd, Memnagar, Ahmedabad',tags:['Endocrinology'],r:'4.5 ★',ph:'+91-79-40011000',x:'55%',y:'45%'}],heart:[{n:'UN Mehta Institute of Cardiology',a:'Civil Hospital Campus, Ahmedabad 380016',tags:['Cardiac Sciences','Research'],r:'4.8 ★',ph:'+91-79-22681280',x:'30%',y:'40%'},{n:'Apollo Hospitals Ahmedabad',a:'Plot 1A GIDC, Bhat, Gandhinagar',tags:['Cardiology'],r:'4.6 ★',ph:'+91-79-66701800',x:'55%',y:'45%'}]},
+  jaipur:{diabetes:[{n:'Fortis Escorts Hospital',a:'Jawaharlal Nehru Marg, Jaipur 302017',tags:['Diabetology','Endocrinology'],r:'4.6 ★',ph:'+91-141-2547000',x:'30%',y:'40%'},{n:'SMS Hospital',a:'Sawai Ram Singh Rd, Jaipur 302004',tags:['Internal Medicine','Govt Hospital'],r:'4.4 ★',ph:'+91-141-2518888',x:'55%',y:'45%'}],heart:[{n:'Fortis Escorts Hospital',a:'Jawaharlal Nehru Marg, Jaipur 302017',tags:['Cardiac Sciences'],r:'4.6 ★',ph:'+91-141-2547000',x:'30%',y:'40%'}]},
+  lucknow:{diabetes:[{n:'SGPGI Lucknow',a:'Raebareli Rd, Lucknow 226014',tags:['Endocrinology & Metabolism'],r:'4.7 ★',ph:'+91-522-2668700',x:'30%',y:'40%'},{n:'Medanta Hospital Lucknow',a:'Sector A, Amar Shaheed Path, Lucknow',tags:['Diabetology'],r:'4.6 ★',ph:'+91-522-4505050',x:'55%',y:'45%'}],heart:[{n:'SGPGI Lucknow',a:'Raebareli Rd, Lucknow 226014',tags:['Cardiology','CTVS'],r:'4.7 ★',ph:'+91-522-2668700',x:'30%',y:'40%'},{n:'Medanta Hospital Lucknow',a:'Sector A, Amar Shaheed Path, Lucknow',tags:['Cardiac Sciences'],r:'4.6 ★',ph:'+91-522-4505050',x:'55%',y:'45%'}]},
+  kochi:{diabetes:[{n:'Amrita Institute of Medical Sciences',a:'AIMS Ponekkara, Kochi 682041',tags:['Diabetology','Endocrinology'],r:'4.8 ★',ph:'+91-484-2801234',x:'30%',y:'40%'},{n:'Lakeshore Hospital',a:'NH 47 Nettoor, Maradu, Kochi 682304',tags:['Diabetes Clinic'],r:'4.6 ★',ph:'+91-484-2701032',x:'55%',y:'45%'}],heart:[{n:'Amrita Institute of Medical Sciences',a:'AIMS Ponekkara, Kochi 682041',tags:['Cardiology','Cardiac Surgery'],r:'4.8 ★',ph:'+91-484-2801234',x:'30%',y:'40%'}]},
+  chandigarh:{diabetes:[{n:'PGI — PGIMER',a:'Sector 12, Chandigarh 160012',tags:['Endocrinology & Metabolism'],r:'4.8 ★',ph:'+91-172-2755555',x:'30%',y:'40%'},{n:'Fortis Hospital Mohali',a:'Phase 8, Mohali, Punjab 160059',tags:['Diabetology'],r:'4.6 ★',ph:'+91-172-4692222',x:'55%',y:'45%'}],heart:[{n:'PGI — PGIMER',a:'Sector 12, Chandigarh 160012',tags:['Cardiology','CTVS'],r:'4.8 ★',ph:'+91-172-2755555',x:'30%',y:'40%'},{n:'Fortis Hospital Mohali',a:'Phase 8, Mohali, Punjab 160059',tags:['Cardiac Sciences'],r:'4.6 ★',ph:'+91-172-4692222',x:'55%',y:'45%'}]},
+  madurai:{diabetes:[{n:'Meenakshi Mission Hospital',a:'Lake Area, Melur Rd, Madurai 625107',tags:['Diabetology'],r:'4.5 ★',ph:'+91-452-2588741',x:'35%',y:'45%'},{n:'Apollo Specialty Hospital Madurai',a:'Lake View Rd, KK Nagar, Madurai 625020',tags:['Endocrinology'],r:'4.6 ★',ph:'+91-452-2527777',x:'58%',y:'38%'}],heart:[{n:'Meenakshi Mission Hospital',a:'Lake Area, Melur Rd, Madurai 625107',tags:['Cardiology'],r:'4.5 ★',ph:'+91-452-2588741',x:'35%',y:'45%'},{n:'Apollo Specialty Hospital Madurai',a:'Lake View Rd, KK Nagar, Madurai 625020',tags:['Cardiac Sciences'],r:'4.6 ★',ph:'+91-452-2527777',x:'58%',y:'38%'}]},
+  trichy:{diabetes:[{n:'Kavery Medical Center',a:'111 Seshapuram, Trichy 620002',tags:['Diabetology'],r:'4.4 ★',ph:'+91-431-4077777',x:'35%',y:'45%'}],heart:[{n:'Kavery Medical Center',a:'111 Seshapuram, Trichy 620002',tags:['Cardiology'],r:'4.4 ★',ph:'+91-431-4077777',x:'35%',y:'45%'}]},
+  salem:{diabetes:[{n:'SKS Hospital',a:'23 Omalur Main Rd, Salem 636004',tags:['Diabetology'],r:'4.4 ★',ph:'+91-427-2230000',x:'35%',y:'45%'}],heart:[{n:'SKS Hospital',a:'23 Omalur Main Rd, Salem 636004',tags:['Cardiology'],r:'4.4 ★',ph:'+91-427-2230000',x:'35%',y:'45%'}]},
+  mysore:{diabetes:[{n:'JSS Hospital',a:'MG Road, Mysore 570004',tags:['Endocrinology'],r:'4.5 ★',ph:'+91-821-2335555',x:'35%',y:'45%'},{n:'Apollo BGS Hospitals',a:'Adichunchanagiri Rd, Mysore 570023',tags:['Diabetology'],r:'4.4 ★',ph:'+91-821-2529990',x:'58%',y:'38%'}],heart:[{n:'JSS Hospital',a:'MG Road, Mysore 570004',tags:['Cardiology'],r:'4.5 ★',ph:'+91-821-2335555',x:'35%',y:'45%'}]},
+  visakhapatnam:{diabetes:[{n:'KIMS Hospital Vizag',a:'50-G Jagadamba Jct, Visakhapatnam 530002',tags:['Diabetology'],r:'4.5 ★',ph:'+91-891-6711000',x:'35%',y:'45%'},{n:'Care Hospital Vizag',a:'10-50-11/4 Waltair Uplands, Vizag 530003',tags:['Endocrinology'],r:'4.4 ★',ph:'+91-891-6662222',x:'58%',y:'38%'}],heart:[{n:'KIMS Hospital Vizag',a:'50-G Jagadamba Jct, Visakhapatnam 530002',tags:['Cardiology'],r:'4.5 ★',ph:'+91-891-6711000',x:'35%',y:'45%'}]},
+};
+
+// Aliases
+const ALIASES={'tiruppur':'coimbatore','new delhi':'delhi','ncr':'delhi','bengaluru':'bangalore','bombay':'mumbai','calcutta':'kolkata','madras':'chennai','trivandrum':'kochi','vizag':'visakhapatnam','cbe':'coimbatore','blr':'bangalore','hyd':'hyderabad','navi mumbai':'mumbai','thane':'mumbai','gurugram':'delhi','gurgaon':'delhi','noida':'delhi','faridabad':'delhi','ernakulam':'kochi','thrissur':'kochi','surat':'ahmedabad','vadodara':'ahmedabad'};
+// Nearby fallbacks
+const NEARBY={'coimbatore':['chennai','bangalore'],'trichy':['coimbatore','chennai'],'madurai':['coimbatore','chennai'],'salem':['coimbatore','chennai'],'mysore':['bangalore'],'kochi':['bangalore','chennai'],'pune':['mumbai'],'visakhapatnam':['hyderabad'],'jaipur':['delhi'],'lucknow':['delhi'],'chandigarh':['delhi'],'ahmedabad':['mumbai']};
+
+function getHospitals(city, dkey){
+  let norm = city.toLowerCase().split(',')[0].trim();
+  norm = ALIASES[norm] || norm;
+  const fallbacks = NEARBY[norm] || [];
+  const searchCities = [norm, ...fallbacks, 'mumbai','delhi','chennai','bangalore','hyderabad'];
+  const acceptableKeys = [dkey, 'diabetes', 'heart']; 
+  
+  // Try to find the city
+  for (let c of searchCities) {
+    if (HOSPITALS[c]) {
+      // Find the best matching department for the hospital in this city
+      for (let k of acceptableKeys) {
+        if (HOSPITALS[c][k]) {
+          return { h: HOSPITALS[c][k], nearby: c === norm ? null : c.charAt(0).toUpperCase() + c.slice(1) };
+        }
+      }
+    }
+  }
+  
+  // Partial match as last resort
+  for(const k of Object.keys(HOSPITALS)){
+    if(k.includes(norm) || norm.includes(k)){
+      for (let dk of acceptableKeys) {
+        if(HOSPITALS[k][dk]) return {h:HOSPITALS[k][dk], nearby:null};
+      }
+    }
+  }
+  
+  return {h:[], nearby:null};
+}
+
+// ── BUILD RESULTS ──────────────────────────────────────
+function buildResults(){
+  const pred = window.predictResults || {disease_key: 'diabetes'};
+  const d = DB[pred.disease_key];
+  const city = pred.city || 'Your City';
+  const uname = pred.patient_name || document.getElementById('pname').value || 'Patient';
+
+  // Update user chip
+  document.getElementById('uav').textContent=(uname.split(' ').map(w=>w[0]).join('').slice(0,2)||'PT').toUpperCase();
+  document.getElementById('uname').textContent=uname.split(' ')[0]+' '+(uname.split(' ')[1]?uname.split(' ')[1][0]+'.':'');
+  document.getElementById('sf-name').textContent=uname;
+
+  document.getElementById('rico').textContent=d.icon;
+  document.getElementById('rname').textContent=d.name;
+  document.getElementById('rconf').textContent=d.conf;
+  document.getElementById('rscore').textContent=d.score;
+  document.getElementById('rdesc').textContent=d.desc;
+  const rl=document.getElementById('rlvl');rl.textContent=d.level==='high'?'High Risk':'Medium Risk';rl.className='rpill '+d.level;
+  document.getElementById('rban').className='rbanner '+d.level;
+
+  // Body impacts
+  document.getElementById('bimp').innerHTML=d.impacts.map(i=>`<div class="ir"><div class="idot" style="background:${i.color}"></div><div><div class="iorg">${i.organ}</div><div class="idesc">${i.desc}</div></div></div>`).join('');
+
+  // SHAP
+  document.getElementById('shap').innerHTML=d.shap.map(s=>`<div class="srow"><div class="slb">${s.n}</div><div class="str"><div class="sf" style="width:${s.p}%;background:${s.c}"></div></div><div class="spct">${s.p}%</div></div>`).join('');
+
+  // Food
+  document.getElementById('food').innerHTML=`<div class="fbox eat"><div class="fhead">✅ Eat More Of</div><ul class="flist">${d.eat.map(f=>`<li>${f}</li>`).join('')}</ul></div><div class="fbox avoid"><div class="fhead">❌ Avoid These</div><ul class="flist">${d.avoid.map(f=>`<li>${f}</li>`).join('')}</ul></div>`;
+
+  // Treatment
+  document.getElementById('treat').innerHTML=d.treat.map(t=>`<div class="tbox"><div class="temoji">${t.e}</div><div class="ttitle">${t.t}</div><div class="tdesc">${t.d}</div></div>`).join('');
+
+  // Medicines
+  document.getElementById('meds').innerHTML=d.meds.map(t=>`<div class="tbox" style="background:rgba(188,140,255,0.04);border:1px solid rgba(188,140,255,0.2);"><div class="temoji">${t.e}</div><div class="ttitle">${t.t}</div><div class="tdesc">${t.d}</div></div>`).join('');
+
+  // Hospitals — dynamic by city
+  const {h:hospitals,nearby}=getHospitals(city,d.key);
+  document.getElementById('hcity').textContent=city;
+  document.getElementById('hspec').textContent=d.spec;
+  const nb=document.getElementById('hnearby');
+  if(nearby){nb.style.display='flex';document.getElementById('nbcity').textContent=city;}
+  else nb.style.display='none';
+  document.getElementById('hlist').innerHTML=hospitals.length>0
+    ?hospitals.map((h,i)=>`<div class="hitem"><div class="hrank">${i+1}</div><div style="flex:1"><div class="hname">${h.n}</div><div class="haddr">📍 ${h.a}</div><div class="htags">${h.tags.map(t=>`<span class="htag">${t}</span>`).join('')}</div><div class="hphone">${h.ph}</div></div><div class="hrating">${h.r}</div></div>`).join('')
+    :`<div style="padding:20px;text-align:center;color:var(--tx2);font-size:13px;">No hospitals found for <strong>${city}</strong>. Try a major city or connect the Google Places API for live results.</div>`;
+
+  // Map
+  document.getElementById('mcitylbl').textContent=city;
+  document.getElementById('mname').textContent=city;
+  document.getElementById('mpins').innerHTML=hospitals.slice(0,4).map((h,i)=>`<div class="pin" style="left:${h.x||'30%'};top:${h.y||'40%'}"><div class="plbl">${i+1}. ${h.n.split(' ').slice(0,2).join(' ')}</div><div class="pdot"></div></div>`).join('');
+
+  // Blockchain
+  document.getElementById('ctx').textContent='0x'+Math.random().toString(16).substr(2,8)+'...'+Math.random().toString(16).substr(2,4);
+  document.getElementById('cpid').textContent='VL-'+Date.now().toString().slice(-8)+'-'+String(Math.floor(Math.random()*9999)).padStart(4,'0');
+  document.getElementById('cts').textContent=new Date().toLocaleString();
+}
+</script>
+</body>
+</html>

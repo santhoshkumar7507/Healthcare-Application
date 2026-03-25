@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VitaLens — Login</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23161b22'/><path d='M30 40 L50 70 L70 40' stroke='%23bc8cff' stroke-width='12' stroke-linecap='round' stroke-linejoin='round' fill='none'/><circle cx='50' cy='20' r='8' fill='%233fb950'/></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+[data-theme="dark"]{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--sur:#1c2128;--sur2:#2d333b;
+  --brd:rgba(255,255,255,.08);--brd2:rgba(255,255,255,.14);
+  --tx:#e6edf3;--tx2:#8b949e;--tx3:#484f58;
+  --ac:#58a6ff;--acg:rgba(88,166,255,.12);--ac2:#3fb950;
+  --vl:#bc8cff;
+}
+[data-theme="light"]{
+  --bg:#f0f4f8;--bg2:#fff;--bg3:#e8edf3;--sur:#fff;--sur2:#f0f3f7;
+  --brd:rgba(0,0,0,.08);--brd2:rgba(0,0,0,.14);
+  --tx:#0d1117;--tx2:#57606a;--tx3:#afb8c1;
+  --ac:#0969da;--acg:rgba(9,105,218,.09);--ac2:#1a7f37;
+  --vl:#8250df;
+}
+*{margin:0;padding:0;box-sizing:border-box;transition:all .2s;}
+body{background:var(--bg);color:var(--tx);font-family:'Outfit',sans-serif;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* Animated Background Focus */
+.ambient{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.ambient::before,.ambient::after{content:'';position:absolute;width:40vw;height:40vw;border-radius:50%;filter:blur(100px);opacity:0.1;animation:drift 15s infinite alternate ease-in-out;}
+.ambient::before{background:var(--ac);top:-10vw;left:-10vw;}
+.ambient::after{background:var(--vl);bottom:-10vw;right:-10vw;animation-delay:-7s;}
+@keyframes drift{0%{transform:translate(0,0) scale(1);}100%{transform:translate(10vw,10vh) scale(1.2);}}
+
+/* Logo */
+.logo{display:flex;align-items:center;justify-content:center;gap:12px;text-decoration:none;margin-bottom:30px;}
+.logo svg{width:42px;height:42px;flex-shrink:0;}
+.logo-name{font-size:24px;font-weight:800;color:var(--tx);letter-spacing:-.5px;}
+.logo-name em{color:var(--ac);font-style:normal;}
+.logo-tag{font-size:10px;color:var(--tx3);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;text-align:left;}
+
+/* Card Card */
+.auth-box{position:relative;z-index:1;width:100%;max-width:400px;background:var(--sur);border:1px solid var(--brd);border-radius:16px;padding:40px;box-shadow:0 15px 35px rgba(0,0,0,0.2);backdrop-filter:blur(20px);}
+.title{font-size:22px;font-weight:700;margin-bottom:8px;}
+.subtitle{font-size:13px;color:var(--tx2);margin-bottom:28px;}
+
+/* Tabs */
+.tabs{display:flex;background:var(--bg3);padding:4px;border-radius:10px;margin-bottom:24px;}
+.tab{flex:1;text-align:center;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:var(--tx2);user-select:none;}
+.tab.active{background:var(--sur);color:var(--ac);box-shadow:0 2px 8px rgba(0,0,0,.1);}
+
+/* Form Elements */
+.form-group{margin-bottom:16px;}
+.label{display:block;font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.input-field{width:100%;background:var(--sur2);border:2px solid var(--brd2);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--tx);font-family:'Outfit',sans-serif;outline:none;}
+.input-field:focus{border-color:var(--ac);box-shadow:0 0 0 3px var(--acg);}
+
+.btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--ac);color:#fff;font-size:14px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;margin-top:8px;}
+.btn:hover{filter:brightness(1.1);transform:translateY(-1px);}
+
+.error-box{display:none;padding:12px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.2);border-radius:8px;color:#f85149;font-size:12px;font-weight:600;margin-bottom:16px;}
+.error-box.show{display:block;}
+
+.view{display:none;}
+.view.active{display:block;animation:fade .3s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="ambient"></div>
+
+<div class="auth-box">
+  <div class="logo">
+    <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="34" height="34" rx="8" fill="var(--ac)"/>
+      <path d="M6 19h4l3-9 4 16 3-11 2 5h6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="27" cy="9" r="3" fill="#3fb950" stroke="#fff" stroke-width="1.5"/>
+    </svg>
+    <div>
+      <div class="logo-name">Vita<em>Lens</em></div>
+      <div class="logo-tag">Health Intelligence</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('login')">Sign In</div>
+    <div class="tab" onclick="switchTab('register')">Create Account</div>
+  </div>
+
+  <div id="error-msg" class="error-box"></div>
+
+  <!-- Login Form -->
+  <form id="login-form" class="view active" onsubmit="handleLogin(event)">
+    <div class="title">Welcome back</div>
+    <div class="subtitle">Enter your credentials to access your dashboard.</div>
+    <div class="form-group">
+      <label class="label">Email Address</label>
+      <input type="email" id="l-email" class="input-field" placeholder="you@example.com" required/>
+    </div>
+    <div class="form-group">
+      <label class="label">Password</label>
+      <input type="password" id="l-pass" class="input-field" placeholder="••••••••" required/>
+    </div>
+    <button type="submit" class="btn">Sign In to Dashboard</button>
+  </form>
+
+  <!-- Register Form -->
+  <form id="register-form" class="view" onsubmit="handleRegister(event)">
+    <div class="title">Create an Account</div>
+    <div class="subtitle">Start managing your disease risk locally.</div>
+    <div class="form-group">
+      <label class="label">Full Name</label>
+      <input type="text" id="r-name" class="input-field" placeholder="Arjun Rajan" required/>
+    </div>
+    <div class="form-group">
+      <label class="label">Email Address</label>
+      <input type="email" id="r-email" class="input-field" placeholder="you@example.com" required/>
+    </div>
+    <div class="form-group">
+      <label class="label">Password</label>
+      <input type="password" id="r-pass" class="input-field" placeholder="Create a strong password" required/>
+    </div>
+    <button type="submit" class="btn">Register Securely</button>
+  </form>
+</div>
+
+<script>
+const errBox = document.getElementById('error-msg');
+const API_URL = 'http://localhost:8000'; // Make sure backend is running
+
+function switchTab(tab) {
+  errBox.classList.remove('show');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  
+  if(tab === 'login') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
+    document.getElementById('login-form').classList.add('active');
+  } else {
+    document.querySelectorAll('.tab')[1].classList.add('active');
+    document.getElementById('register-form').classList.add('active');
+  }
+}
+
+function showError(msg) {
+  errBox.textContent = msg;
+  errBox.classList.add('show');
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  errBox.classList.remove('show');
+  const btn = e.target.querySelector('button');
+  btn.textContent = 'Authenticating...';
+  
+  const email = document.getElementById('l-email').value;
+  const pass = document.getElementById('l-pass').value;
+
+  try {
+    const formData = new URLSearchParams();
+    formData.append('username', email); // OAuth2 expects 'username' field
+    formData.append('password', pass);
+
+    const res = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData
+    });
+
+    const data = await res.json();
+    if(res.ok && data.access_token) {
+      localStorage.setItem('vitalens_token', data.access_token);
+      localStorage.setItem('vitalens_email', email);
+      if(data.name) localStorage.setItem('vitalens_name', data.name);
+      window.location.href = 'index.html'; // Redirect to dashboard
+    } else {
+      showError(data.detail || 'Invalid credentials. Have you created an account?');
+      btn.textContent = 'Sign In to Dashboard';
+    }
+  } catch (err) {
+    showError('Unable to connect to the backend server (http://localhost:8000). Is it running?');
+    btn.textContent = 'Sign In to Dashboard';
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  errBox.classList.remove('show');
+  const btn = e.target.querySelector('button');
+  btn.textContent = 'Creating Account...';
+
+  const name = document.getElementById('r-name').value;
+  const email = document.getElementById('r-email').value;
+  const pass = document.getElementById('r-pass').value;
+
+  if(!pass || pass.length < 5) {
+    showError("Password must be at least 5 characters long.");
+    btn.textContent = 'Register Securely';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password: pass })
+    });
+
+    const data = await res.json();
+    if(res.ok) {
+      // Auto-login directly
+      const formData = new URLSearchParams();
+      formData.append('username', email);
+      formData.append('password', pass);
+      const loginRes = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+      });
+      const loginData = await loginRes.json();
+      if(loginRes.ok && loginData.access_token) {
+        localStorage.setItem('vitalens_token', loginData.access_token);
+        localStorage.setItem('vitalens_email', email);
+        localStorage.setItem('vitalens_name', loginData.name || name);
+        window.location.href = 'index.html';
+      } else {
+        switchTab('login');
+      }
+    } else {
+      showError(data.detail || 'Registration failed. Try a different email.');
+      btn.textContent = 'Register Securely';
+    }
+  } catch (err) {
+    showError('Unable to connect to the backend server. Is it running?');
+    btn.textContent = 'Register Securely';
+  }
+}
+
+// Redirect if already logged in
+if(localStorage.getItem('vitalens_token')) {
+  // Optional: Auto-redirect. But maybe they wanted to test the page:
+  // window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

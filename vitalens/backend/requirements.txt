@@ -1,0 +1,29 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-jose[cryptography]
+PyJWT
+passlib[bcrypt]
+sqlalchemy
+psycopg2-binary
+alembic
+python-dotenv
+pydantic
+pydantic-settings
+
+# ML
+# torch
+# torchvision
+# scikit-learn
+# numpy
+# pandas
+# Pillow
+# shap
+# joblib
+
+# Blockchain
+web3
+
+# HTTP
+httpx
+aiofiles
