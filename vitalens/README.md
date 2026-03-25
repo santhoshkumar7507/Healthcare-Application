@@ -90,6 +90,16 @@ In the current healthcare landscape, **preventive action** is significantly more
 
 ---
 
+## ❓ Why this Repository?
+
+The healthcare industry is currently undergoing a digital transformation where data trust and predictive accuracy are paramount. This repository serves as a **blueprint for decentralized medical intelligence**.
+
+- **Innovation at the Core**: Unlike standard prediction models, this repo implements a **fused neural architecture**, merging CNNs for static risk factors and LSTMs for longitudinal health patterns.
+- **Solving the 'Trust' Problem**: Healthcare data is often siloed. By integrating an **Ethereum-based ledger**, we demonstrate a real-world application of how patients can hold cryptographically verifiable proof of their medical history.
+- **Bridges AI and Action**: This isn't just a research paper; it's a functional prototype that connects **Explainable AI (XAI)** diagnostics directly to **Smart Hospital Triage**, creating a closed-loop system from prediction to care.
+
+---
+
 ## 📜 License
 Published under the MIT License. Developed for the Final Year Project — Healthcare Innovation.
 
