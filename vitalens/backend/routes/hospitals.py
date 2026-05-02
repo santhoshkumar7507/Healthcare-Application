@@ -1,5 +1,5 @@
 """
-VitaLens — routes/hospitals.py
+AuraHealth — routes/hospitals.py
 """
 from fastapi import APIRouter, Query
 from services.hospital_finder import find_hospitals

@@ -1,5 +1,5 @@
 """
-VitaLens — Health Intelligence Platform
+AuraHealth — Universal Wellness Intelligence Platform
 Backend Entry Point  |  main.py
 
 Run: uvicorn main:app --reload --port 8000
@@ -25,16 +25,16 @@ from routes.auth      import router as auth_router
 async def lifespan(app: FastAPI):
     # Startup
     Base.metadata.create_all(bind=engine)
-    print("✓ VitaLens API started")
-    print("✓ Database ready")
+    print("[OK] AuraHealth API started")
+    print("[OK] Database ready")
     yield
     # Shutdown
-    print("VitaLens API stopped")
+    print("AuraHealth API stopped")
 
 
 # ─── App ────────────────────────────────────────────────
 app = FastAPI(
-    title="VitaLens API",
+    title="AuraHealth API",
     description="AI-powered disease risk prediction",
     version="1.0.0",
     docs_url="/api/docs",
@@ -63,7 +63,7 @@ app.include_router(hospitals_router, prefix="/api/hospitals", tags=["Hospital Fi
 # ─── Health Check ───────────────────────────────────────
 @app.get("/api/health", tags=["System"])
 async def health():
-    return {"status": "ok", "service": "VitaLens", "version": "1.0.0"}
+    return {"status": "ok", "service": "AuraHealth", "version": "1.0.0"}
 
 
 if __name__ == "__main__":

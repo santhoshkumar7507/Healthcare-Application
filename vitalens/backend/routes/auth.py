@@ -1,4 +1,4 @@
-"""VitaLens — routes/auth.py"""
+"""AuraHealth — routes/auth.py"""
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from database import get_db, User
 
 router = APIRouter()
-SECRET = os.getenv("JWT_SECRET", "vitalens-dev-secret")
+SECRET = os.getenv("JWT_SECRET", "aurahealth-dev-secret")
 
 class UserRegister(BaseModel):
     name: str

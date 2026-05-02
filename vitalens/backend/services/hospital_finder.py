@@ -1,5 +1,5 @@
 """
-VitaLens — services/hospital_finder.py
+AuraHealth — services/hospital_finder.py
 
 Dynamic hospital recommendations based on user's city.
 Covers 25+ Indian cities across all major states.

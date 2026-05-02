@@ -1,10 +1,10 @@
-# 🧬 VitaLens — AI-Powered Preventive Healthcare Infrastructure
+# 🧬 AuraHealth — AI-Powered Universal Wellness Infrastructure
 
-![VitaLens](https://images.unsplash.com/photo-1576091160550-217359f47f48?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3)
+![AuraHealth](https://images.unsplash.com/photo-1576091160550-217359f47f48?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3)
 
 > **Empowering Proactive Health Decisions through Hybrid Deep Learning and Blockchain Security.**
 
-VitaLens is a next-generation healthcare platform that bridges the gap between lifestyle data and early disease detection. By combining **CNN-BiLSTM architectures** for multi-modal analysis with **Ethereum-based smart contracts** for immutable health records, VitaLens provides a secure, accurate, and scalable solution for preventive medicine.
+AuraHealth is a next-generation healthcare platform that bridges the gap between lifestyle data and early disease detection. By combining **CNN-BiLSTM architectures** for multi-modal analysis with **Ethereum-based smart contracts** for immutable health records, AuraHealth provides a secure, accurate, and scalable solution for preventive medicine.
 
 ---
 
@@ -44,9 +44,9 @@ graph TD
 
 ## 🌍 Real-World Impact
 
-In the current healthcare landscape, **preventive action** is significantly more cost-effective and successful than **reactive treatment**. VitaLens addresses three critical real-world challenges:
+In the current healthcare landscape, **preventive action** is significantly more cost-effective and successful than **reactive treatment**. AuraHealth addresses three critical real-world challenges:
 
-1.  **Early Detection of Silent Killers**: Conditions like Type 2 Diabetes and Hypertension often go unnoticed. VitaLens uses subtle lifestyle patterns to flag high-risk individuals before symptoms become severe.
+1.  **Early Detection of Silent Killers**: Conditions like Type 2 Diabetes and Hypertension often go unnoticed. AuraHealth uses subtle lifestyle patterns to flag high-risk individuals before symptoms become severe.
 2.  **Data Security & Trust**: Traditional medical databases are centralized and vulnerable to breaches. By using blockchain technology, we ensure medical history is immutable and patient-controlled.
 3.  **Explainability in Healthcare**: Black-box AI is dangerous in medicine. Our implementation of Explainable AI (XAI) ensures that clinicians can verify the logic behind every risk score.
 
@@ -64,7 +64,7 @@ In the current healthcare landscape, **preventive action** is significantly more
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/santhoshkumar7507/Disease-Prediction-Using-ML.git
-   cd Disease-Prediction-Using-ML/vitalens
+   cd Disease-Prediction-Using-ML/aurahealth
    ```
 
 2. **Backend Configuration**
@@ -78,7 +78,7 @@ In the current healthcare landscape, **preventive action** is significantly more
 3. **Environment Setup**
    Create a `.env` file in the `backend/` directory:
    ```env
-   DATABASE_URL=sqlite:///./vitalens.db
+   DATABASE_URL=sqlite:///./aurahealth.db
    JWT_SECRET=your_secret_key
    BLOCKCHAIN_RPC=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
    CONTRACT_ADDRESS=0x...
@@ -104,4 +104,4 @@ The healthcare industry is currently undergoing a digital transformation where d
 Published under the MIT License. Developed for the Final Year Project — Healthcare Innovation.
 
 ---
-*Created with ❤️ by the VitaLens Team.*
+*Created with ❤️ by the AuraHealth Team.*

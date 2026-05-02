@@ -1,4 +1,4 @@
-"""VitaLens — routes/records.py"""
+"""AuraHealth — routes/records.py"""
 from fastapi import APIRouter, HTTPException
 from blockchain.service import BlockchainService
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// VitaLens — PatientRecord.sol
+// AuraHealth — PatientRecord.sol
 // Immutable health record storage on Ethereum
 
 contract PatientRecord {

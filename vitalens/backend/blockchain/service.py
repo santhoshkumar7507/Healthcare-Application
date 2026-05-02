@@ -1,4 +1,4 @@
-"""VitaLens — blockchain/service.py"""
+"""AuraHealth — blockchain/service.py"""
 import hashlib, datetime, os
 from web3 import Web3
 

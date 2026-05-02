@@ -1,5 +1,5 @@
 """
-VitaLens — rule-based disease prediction engine
+AuraHealth — rule-based disease prediction engine
 """
 from fastapi import APIRouter
 from pydantic import BaseModel

@@ -1,4 +1,4 @@
-"""VitaLens — database.py"""
+"""AuraHealth — database.py"""
 from sqlalchemy import create_engine, Column, String, Integer, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -6,7 +6,7 @@ import datetime, uuid, os
 from dotenv import load_dotenv
 load_dotenv()
 
-DB_URL = os.getenv("DATABASE_URL", "sqlite:///./vitalens.db")
+DB_URL = os.getenv("DATABASE_URL", "sqlite:///./aurahealth.db")
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False} if "sqlite" in DB_URL else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

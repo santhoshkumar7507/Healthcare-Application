@@ -1,4 +1,4 @@
-"""VitaLens — ml/predictor.py"""
+"""AuraHealth — ml/predictor.py"""
 import torch, torch.nn as nn, numpy as np, os
 from typing import Dict, Any, List
 
@@ -28,7 +28,7 @@ class BiLSTMBranch(nn.Module):
         out, _ = self.lstm(x)
         return out[:, -1, :]
 
-class VitaLensModel(nn.Module):
+class AuraHealthModel(nn.Module):
     def __init__(self, feat_dim=18, num_classes=4):
         super().__init__()
         self.cnn  = CNNBranch(feat_dim)
@@ -52,9 +52,9 @@ DISEASES = {
 
 class DiseasePredictor:
     def __init__(self):
-        self.model = VitaLensModel()
+        self.model = AuraHealthModel()
         self.model.eval()
-        p = os.getenv("MODEL_PATH", "ml/saved_models/vitalens_v1.pt")
+        p = os.getenv("MODEL_PATH", "ml/saved_models/aurahealth_v1.pt")
         if os.path.exists(p):
             self.model.load_state_dict(torch.load(p, map_location="cpu"))
 
@@ -97,7 +97,7 @@ class DiseasePredictor:
         return np.concatenate([f1, f2[:l]])
 
 
-"""VitaLens — ml/xai.py"""
+"""AuraHealth — ml/xai.py"""
 class SHAPExplainer:
     def explain(self, features, model_key: str):
         labels = ["High blood sugar","Family history","High BMI","Low activity","Poor diet","High stress","Irregular sleep"]
@@ -106,7 +106,7 @@ class SHAPExplainer:
         return [{"name":n,"pct":s,"color":c} for n,s,c in zip(labels,scores,colors)]
 
 
-"""VitaLens — ml/image_processor.py"""
+"""AuraHealth — ml/image_processor.py"""
 import torchvision.transforms as T
 from torchvision.models import resnet50, ResNet50_Weights
 from PIL import Image
