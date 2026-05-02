@@ -775,7 +775,7 @@ async function runAI(){
     const city = document.getElementById('pcity').value || '';
     const symps = Array.from(SS);
 
-    const res = await fetch("http://localhost:8000/api/predict/analyze", {
+    const res = await fetch("https://healthcare-application-1wcd.onrender.com/api/predict/analyze", {
       method: "POST", headers: {"Content-Type": "application/json"},
       body: JSON.stringify({name, city, activity_text: act_text, symptoms: symps})
     });
