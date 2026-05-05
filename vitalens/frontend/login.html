@@ -158,7 +158,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Outfit',sans-serif;height
 });
 
 const errBox = document.getElementById('error-msg');
-const API_URL = 'https://healthcare-application-4wcd.onrender.com';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? 'http://localhost:8000' 
+  : 'https://healthcare-application-4wcd.onrender.com';
 
 function switchTab(tab) {
   errBox.classList.remove('show');
